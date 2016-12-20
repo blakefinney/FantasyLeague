@@ -6,3 +6,56 @@
 body {
   padding-top: 50px;
 }
+
+/* Home Page Style */
+#MainStoryContainer {
+  display: inline-block;
+}
+@media (min-width: 768px) {
+    #MainStoryContainer {width: 55%;}
+}
+@media (max-width: 767px) {
+    #MainStoryContainer {width: 100%;}
+}
+#MainStory {
+    width: 100%;
+    max-width: 768px;
+    height: 40%;
+    max-height: 400px;
+    background-size: cover;
+    position: relative;
+    display: inline-block;
+}
+#MainStoryCaption {
+  text-align: center;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  background-color: rgba(200,200,200,0.8);
+  margin-bottom: 0px;
+  padding: 1%;
+}
+
+#SideStoryContainer {
+  display: inline-block;
+  vertical-align: top;
+}
+@media (min-width: 768px) {
+    #SideStoryContainer {width: 35%;}
+}
+@media (max-width: 767px) {
+    #SideStoryContainer {width: 100%;}
+}
+.side_story {
+  height: 10%;
+  width: 100%;
+  background-color: #999;
+}
+
+/* Story Page */
+#StoryPageImage {
+  width:100%;
+  max-width: 600px;
+  display: block;
+  margin: auto;
+}
