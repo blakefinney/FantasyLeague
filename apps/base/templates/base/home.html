@@ -1,5 +1,19 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
-    <p>Welcome, start editing this template in <code>apps/base/templates/base/home.html</code></p>
+    {% if stories and stories|length %}
+        <div id="StoryContainer">
+            {% for story in stories %}
+                {% if forloop.first %}
+                    <div id="MainStoryContainer"><a href="/story/{{ story.id }}/"><div id="MainStory" style='background-image: url("{{ story.image }}")'>
+                        <h2 id="MainStoryCaption">{{ story.title }}</h2>
+                    </div></a></div><div id="SideStoryContainer">
+                {% else %}
+                    <div class="side_story"><a href="/story/{{ story.id }}/">{{ story.title }}</a></div>
+                    {% if forloop.last %}</div>{% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}
