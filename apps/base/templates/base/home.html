@@ -10,7 +10,7 @@
                         <h2 id="MainStoryCaption">{{ story.title }}</h2>
                     </div></a></div><div id="SideStoryContainer">
                 {% else %}
-                    <div class="side_story"><a href="/story/{{ story.id }}/">{{ story.title }}</a></div>
+                    <a href="/story/{{ story.id }}/"><div class="side_story" style="background: linear-gradient(to left, rgba(255, 255, 255, 0),rgba(100,100,100,1)), url('{{ story.image }}') no-repeat; background-size: contain; background-position: right;">{{ story.title }}</div></a>
                     {% if forloop.last %}</div>{% endif %}
                 {% endif %}
             {% endfor %}

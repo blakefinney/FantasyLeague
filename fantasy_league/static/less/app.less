@@ -21,7 +21,6 @@ body {
     width: 100%;
     max-width: 768px;
     height: 40%;
-    max-height: 400px;
     background-size: cover;
     position: relative;
     display: inline-block;
@@ -40,16 +39,22 @@ body {
   display: inline-block;
   vertical-align: top;
 }
+.side_story {
+  height: 10%;
+  width: 100%;
+  background-color: #BBB;
+  background: linear-gradient(to right,#bbb,#bbb,#fff);
+  text-align: left;
+  padding-left: 20px;
+  line-height: 300%;
+}
+
 @media (min-width: 768px) {
     #SideStoryContainer {width: 35%;}
 }
 @media (max-width: 767px) {
     #SideStoryContainer {width: 100%;}
-}
-.side_story {
-  height: 10%;
-  width: 100%;
-  background-color: #999;
+    .side_story {height:7%;}
 }
 
 /* Story Page */
