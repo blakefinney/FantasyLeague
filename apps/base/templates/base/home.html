@@ -2,18 +2,41 @@
 
 
 {% block content %}
+    {# New Stories Display #}
+    {% with "rgba(0,0,50,1)" as fade_from %}
+    {% with "rgba(255,255,255,0)" as fade_to %}
     {% if stories and stories|length %}
         <div id="StoryContainer">
+            <h3>News</h3>
             {% for story in stories %}
                 {% if forloop.first %}
                     <div id="MainStoryContainer"><a href="/story/{{ story.id }}/"><div id="MainStory" style='background-image: url("{{ story.image }}")'>
                         <h2 id="MainStoryCaption">{{ story.title }}</h2>
                     </div></a></div><div id="SideStoryContainer">
                 {% else %}
-                    <a href="/story/{{ story.id }}/"><div class="side_story" style="background: linear-gradient(to left, rgba(255, 255, 255, 0),rgba(100,100,100,1)), url('{{ story.image }}') no-repeat; background-size: contain; background-position: right;">{{ story.title }}</div></a>
+                    <a class="side_story_link" href="/story/{{ story.id }}/"><div class="side_story_holder"><div class="side_story" style="background: linear-gradient(to left, {{ fade_to }},{{ fade_from }},{{ fade_from }},{{ fade_from }},{{ fade_from }},{{ fade_from }}), url('{{ story.image }}') no-repeat; background-size: contain; background-position: right;">{{ story.title }}</div>
+                        <div style="background-color: {{ fade_from }}; height:100%;"></div></div>
+                    </a>
                     {% if forloop.last %}</div>{% endif %}
                 {% endif %}
             {% endfor %}
         </div>
     {% endif %}
+    {% endwith %}
+    {% endwith %}
+    {# Standings Display #}
+    <div id="StandingsBlock"><h3>Standings</h3>
+    <div id="Div1" class="division_holder">
+    <h4>{{ div1_name }}</h4>
+    {% for team in div1_standings %}
+        <div class="standings_team div1">{{ forloop.counter }} - {{ team.team_name }}</div>
+    {% endfor %}
+    </div>
+    <div id="Div2" class="division_holder">
+    <h4>{{ div2_name }}</h4>
+    {% for team in div2_standings %}
+        <div class="standings_team div2">{{ forloop.counter }} - {{ team.team_name }}</div>
+    {% endfor %}
+    </div>
+    </div>
 {% endblock %}

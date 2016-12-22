@@ -22,7 +22,20 @@ def home(request):
                             "image": post.thumbnail['link'],
                             "content":post.content})
         template_context.update(stories=stories)
+
+    # Fetch Standings
+    template_context.update(div1_standings=[{"team_id": 1, "team_name": "Team 1"}, {"team_id": 2, "team_name": "Team 2"}, {"team_id": 3, "team_name": "Team 3"}, {"team_id": 4, "team_name": "Team 4"}, {"team_id": 5, "team_name": "Team 5"}, {"team_id": 6, "team_name": "Team 6"}],
+                            div2_standings=[{"team_id": 7, "team_name": "Team 7"}, {"team_id": 8, "team_name": "Team 8"}, {"team_id": 9, "team_name": "Team 9"}, {"team_id": 10, "team_name": "Team 10"}, {"team_id": 11, "team_name": "Team 11"}, {"team_id": 12, "team_name": "Team 12"}])
+
+    template_context.update(div1_name='Northern Division',
+                            div2_name='Southern Division')
+
     return render(request, 'base/home.html', context=template_context)
+
+def login(request):
+    """ Login View """
+    template_context = {}
+    return render(request, 'base/login.html', context=template_context)
 
 
 def story(request, story_id=None):

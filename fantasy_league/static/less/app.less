@@ -39,8 +39,15 @@ body {
   display: inline-block;
   vertical-align: top;
 }
-.side_story {
+.side_story_holder {
+  position: relative;
   height: 10%;
+  width: 100%;
+}
+
+.side_story {
+  position: absolute;
+  height: 100%;
   width: 100%;
   background-color: #BBB;
   background: linear-gradient(to right,#bbb,#bbb,#fff);
@@ -54,7 +61,7 @@ body {
 }
 @media (max-width: 767px) {
     #SideStoryContainer {width: 100%;}
-    .side_story {height:7%;}
+    .side_story_holder {height:7%;}
 }
 
 /* Story Page */
