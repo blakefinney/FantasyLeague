@@ -166,3 +166,6 @@ LOGGING = {
         }
     }
 }
+
+# USER MODEL
+#AUTH_USER_MODEL = "base.TeamOwner"
