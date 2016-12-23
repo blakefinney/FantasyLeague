@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Login to the Superbowl of Cereal</h2>
+    <form action="/login/" method="post">
+        {% csrf_token %}
+        <label>Username</label><input required class="form-control input-sm login-input" title="Username" type="text" name="username"><br>
+        <label>Password</label><input required class="form-control input-sm login-input" title="Password" type="password" name="password"><br>
+        <input class="btn btn-primary login-button" type="submit" value="Login!">
+    </form>
+{% endblock %}

@@ -2,10 +2,13 @@
 
 from django.conf.urls import url
 
-from .views.base_views import home, story
+from .views.base_views import home, login_form, logout_form, register_form, story
 
 
 urlpatterns = [
     url(r'^$', home, name='home'),
+    url(r'^login/$',login_form, name='login'),
+    url(r'^logout/$',logout_form, name='logout'),
+    url(r'^register/$',register_form, name='register'),
     url(r'^story/(?P<story_id>\w+)/$', story, name='story'),
 ]

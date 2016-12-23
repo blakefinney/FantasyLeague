@@ -87,3 +87,5 @@ auto-save-list
 .project
 .settings
 .pydevproject
+
+.idea
