@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Team Name Here</h2>
+<table id="PlayerTable">
+  <thead>
+    <tr>
+      <th class="upper_header" colspan="2">Player</th
+      ><th class="upper_header stat_column" colspan="3">Passing Stats</th>
+      <th class="upper_header stat_column" colspan="3">Rushing Stats</th>
+      <th class="upper_header stat_column" colspan="3">Receiving Stats</th>
+      <th class="upper_header" colspan="2">Points</th>
+    </tr>
+    <tr>
+      <th></th><th>Name</th>
+      <th class="stat_column">Attempts</th><th class="stat_column">Yards</th><th class="stat_column">TDs</th>
+      <th class="stat_column">Rushes</th><th class="stat_column">Yards</th><th class="stat_column">TDs</th>
+      <th class="stat_column">Receptions</th><th class="stat_column">Yards</th><th class="stat_column">TDs</th>
+      <th>Projected</th><th>Points</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for pos in positions %}
+    <tr class="{% if pos.player_id == -1 %}empty{% endif %}">
+      <td>{{ pos.position }}</td><td>{{ pos.player_name }} ({{ pos.player_team }})</td>
+      <td>{{ pos.pass.atts }}</td><td>{{ pos.pass.yards }}</td><td>{{ pos.pass.tds }}</td>
+      <td>{{ pos.rush.atts }}</td><td>{{ pos.rush.yards }}</td><td>{{ pos.rush.tds }}</td>
+      <td>{{ pos.rec.recep }}</td><td>{{ pos.rec.yards }}</td><td>{{ pos.rec.tds }}</td>
+      <td></td><td></td>
+
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

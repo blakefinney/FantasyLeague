@@ -12,16 +12,20 @@ def home(request):
     """ Home Page View """
     template_context = {}
     # Fetch Wordpress stories
-    wp = Client('https://blakefinney.wordpress.com/xmlrpc.php', settings.WORDPRESS_USERNAME, settings.WORDPRESS_PASSWORD)
-    all_posts = wp.call(GetPosts())
-    if len(all_posts) > 0:
-        stories = []
-        for post in all_posts:
-            stories.append({"id": post.id,
-                            "title": post.title,
-                            "image": post.thumbnail['link'],
-                            "content":post.content})
-        template_context.update(stories=stories)
+    stories = []
+    try:
+        wp = Client('https://blakefinney.wordpress.com/xmlrpc.php', settings.WORDPRESS_USERNAME, settings.WORDPRESS_PASSWORD)
+        all_posts = wp.call(GetPosts())
+        if len(all_posts) > 0:
+            for post in all_posts:
+                stories.append({"id": post.id,
+                                "title": post.title,
+                                "image": post.thumbnail['link'],
+                                "content":post.content})
+    except Exception:
+        error = ''
+
+    template_context.update(stories=stories)
     return render(request, 'base/home.html', context=template_context)
 
 
