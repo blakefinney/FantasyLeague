@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Register for the Superbowl of Cereal</h2>
+<form action="/register/" method="post">
+{% csrf_token %}
+    <label>Username</label><input required class="form-control input-sm register-input" title="Username" type="text" name="username"><br>
+    <label>First Name</label><input required class="form-control input-sm register-input" title="First Name" type="text" name="firstname"><br>
+    <label>Surname</label><input required class="form-control input-sm register-input" title="Surname" type="text" name="lastname"><br>
+    <label>Email Address</label><input required class="form-control input-sm register-input" title="Email Address" type="email" name="email"><br>
+    <label>Password</label><input required class="form-control input-sm register-input" title="Password" type="password" name="password"><br>
+    <label>Your Secret (Given to you by the commish)</label><input required class="form-control input-sm register-input" title="Secret" type="password" name="secret"><br>
+    <input class="btn btn-primary register-button" type="submit" value="Register!">
+</form>
+{% endblock %}
