@@ -83,3 +83,55 @@ body {
   display: block;
   margin: auto;
 }
+
+/* Team Page */
+#PlayerTable {
+    width: 100%;
+    text-align: center;
+}
+
+#PlayerTable, #PlayerTable tbdoy tr, #PlayerTable td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+#PlayerTable .upper_header {
+    text-align: center;
+}
+
+#PlayerTable th, #PlayerTable td:not(.player_name) {
+    padding: 6px;
+}
+#PlayerTable tr.filled {
+    background-color: #FFF;
+}
+
+#PlayerTable td.team-position {
+    border-bottom: 0px;
+    border-top: 0px;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+}
+
+#PlayerTable td.player_name {
+    font-weight: 600;
+    font-size: 0.9em;
+    width: 12%;
+}
+
+#PlayerTable th, #PlayerTable td.team-position, #PlayerTable tr.bench_divider {
+    background-color: #DDD;
+}
+
+#PlayerTable .drag-player {
+    padding:10px;
+}
+
+@media (min-width: 767px) {
+    #PlayerTable .mobile-pos {display: none;}
+}
+
+@media (max-width: 767px) {
+    #PlayerTable .stat_column, #PlayerTable .desktop-pos {display: none;}
+    #PlayerTable td.player_name {width: 50%;}
+}

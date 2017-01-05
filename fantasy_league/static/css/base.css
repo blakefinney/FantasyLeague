@@ -1,1 +1,131 @@
 /* App custom css */
+@import "../vendor/bootstrap/less/bootstrap.less";
+
+// Customize bootstrap and add your own LESS files here
+// @brand-primary: #0033CC;
+
+body {
+  padding-top: 50px;
+}
+
+/* Login/Register style */
+@media (min-width: 768px) {
+  .login-input, .register-input{
+    width: 30%;
+  }
+}
+@media (max-width: 767px) {
+  .login-button, .register-button {
+    width: 100%;
+  }
+}
+
+/* Home Page Style */
+#MainStoryContainer {
+  display: inline-block;
+}
+@media (min-width: 768px) {
+    #MainStoryContainer {width: 55%;}
+}
+@media (max-width: 767px) {
+    #MainStoryContainer {width: 100%;}
+}
+#MainStory {
+    width: 100%;
+    max-width: 768px;
+    height: 40%;
+    background-size: cover;
+    position: relative;
+    display: inline-block;
+}
+#MainStoryCaption {
+  text-align: center;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  background-color: rgba(200,200,200,0.8);
+  margin-bottom: 0px;
+  padding: 1%;
+}
+
+#SideStoryContainer {
+  display: inline-block;
+  vertical-align: top;
+}
+.side_story_holder {
+  position: relative;
+  height: 10%;
+  width: 100%;
+}
+
+.side_story {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #BBB;
+  background: linear-gradient(to right,#bbb,#bbb,#fff);
+  text-align: left;
+  padding-left: 20px;
+  line-height: 300%;
+}
+
+@media (min-width: 768px) {
+    #SideStoryContainer {width: 35%;}
+}
+@media (max-width: 767px) {
+    #SideStoryContainer {width: 100%;}
+    .side_story_holder {height:7%;}
+}
+
+/* Story Page */
+#StoryPageImage {
+  width:100%;
+  max-width: 600px;
+  display: block;
+  margin: auto;
+}
+
+/* Team Page */
+#PlayerTable {
+    width: 100%;
+    text-align: center;
+}
+
+#PlayerTable, #PlayerTable tbdoy tr, #PlayerTable td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+#PlayerTable .upper_header {
+    text-align: center;
+}
+
+#PlayerTable th, #PlayerTable td {
+    padding: 5px;
+}
+#PlayerTable tr.filled {
+    background-color: #FFF;
+}
+
+#PlayerTable td.team-position {
+    border-bottom: 0px;
+    border-top: 0px;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+}
+
+#PlayerTable th, #PlayerTable td.team-position, #PlayerTable tr.bench_divider {
+    background-color: #DDD;
+}
+
+#PlayerTable .drag-player {
+    cursor: move;
+}
+
+@media (min-width: 767px) {
+    #PlayerTable .mobile-pos {display: none;}
+}
+
+@media (max-width: 767px) {
+    #PlayerTable .stat_column, #PlayerTable .desktop-pos {display: none;}
+}

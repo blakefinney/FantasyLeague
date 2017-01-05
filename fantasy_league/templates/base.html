@@ -7,23 +7,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block meta_description %}{% endblock %}">
     <meta name="author" content="{% block meta_author %}{% endblock %}">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+	  <meta name="mobile-web-app-capable" content="yes">
+	  <meta name="viewport" content="width=device-width" />
+    <link rel="shortcut icon" sizes="196x196" href="{% static 'img/icons/196icon.png' %}">
+	  <link rel="shortcut icon" sizes="128x128" href="{% static 'img/icons/128icon.png' %}">
+    <link rel="apple-touch-startup-image" href="{% static 'img/Large Icon.png' %}">
+
+    <!-- Google CDN jQuery with a local fallback -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="/static/js/libs/jquery-1.11.2.min.js"><\/script>')</script>
+
+    {% if debug %}
+      <link rel="stylesheet/less" href="{% static 'less/app.less' %}">
+      <script type="text/javascript" src="{% static 'js/libs/less.min.js' %}"></script>
+    {% else %}
+      {% compress css %}
+        <link rel="stylesheet" type="text/less" media="all" href="{% static 'less/app.less' %}">
+        <script type="text/javascript" src="{% static 'js/libs/less.min.js' %}"></script>
+      {% endcompress %}
+    {% endif %}
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
 
     <title>{% block page_title %}{{ _("Superbowl of Cereal") }}{% endblock %}</title>
 
-  {% if debug %}
-    <link rel="stylesheet/less" href="{% static 'less/app.less' %}">
-    <script type="text/javascript" src="{% static 'js/libs/less.min.js' %}"></script>
-  {% else %}
-    {% compress css %}
-    <link rel="stylesheet" type="text/less" media="all" href="{% static 'less/app.less' %}">
-    {% endcompress %}
-  {% endif %}
+  {% compress js %}
+    <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/libs/jquery-ui-1.12.1.custom/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+  {% endcompress %}
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    {% block js %}{% endblock %}
 </head>
 
 <body>
@@ -44,7 +69,7 @@
         <ul class="nav navbar-nav">
             {% if user.is_authenticated %}
             <li><a href="/news/">News</a></li>
-            <li><a href="/my-team/">My Team</a></li>
+            <li><a href="/team/1/">My Team</a></li>
             <li><a href="/live-scores/">Live Scores</a></li>
             <li><a href="/live-scores/">Standings</a></li>
             <li><a href="/players/">Players</a></li>
@@ -63,18 +88,9 @@
     </div>
   </nav>
 
-  <div class="container" style="margin-top: 15px;">
+  <div class="container well" style="margin-top: 15px;">
     {% block content %}{% endblock %}
   </div>
-
-  <!-- Google CDN jQuery with a local fallback -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="/static/js/libs/jquery-1.11.2.min.js"><\/script>')</script>
-
-  {% compress js %}
-    <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.js' %}"></script>
-    <script src="{% static 'js/app.js' %}"></script>
-  {% endcompress %}
 
   <!-- Asynchronous Google Analytics snippet. Change UA-XXXXX-X to be your site's ID -->
   <script>
