@@ -1,19 +1,8 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+{% load static %}
 {% block js %}
-<script type="text/javascript" async>
-  jQuery(function() {
-    jQuery( ".drag-player" ).draggable({
-      revert: "invalid",
-      axis: "y"
-    });
-    jQuery(".drop-area").droppable({
-
-    });
-
-    jQuery('.selectpicker').selectpicker({"width":"65px"});
-  });
-</script>
+<script type="text/javascript" async src="{% static 'js/team_page.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -28,12 +17,12 @@
       <th class="upper_header stat_column" colspan="4">Receiving Stats</th>
       <th class="upper_header" colspan="2">Points</th>
     </tr>
-    <tr>
+    <tr class="stat_column">
       <th style="border-left: 1px solid black;"></th><th></th>
       <th class="stat_column">Attempts</th><th class="stat_column">Yards</th><th class="stat_column">TDs</th>
       <th class="stat_column">Rushes</th><th class="stat_column">Yards</th><th class="stat_column">TDs</th>
       <th class="stat_column">Targets</th><th class="stat_column">Receptions</th><th class="stat_column">Yards</th><th class="stat_column">TDs</th>
-      <th>Proj.</th><th>Points</th>
+      <th class="stat_column">Proj.</th><th>Points</th>
     </tr>
   </thead>
   <tbody>
@@ -43,47 +32,47 @@
       <th class="stat_column">PATs Made</th><th class="stat_column">PATs Missed</th>
       <th class="stat_column">0-29 Made</th><th class="stat_column">30-39 Made</th><th class="stat_column">40-49 Made</th><th class="stat_column">50+ Made</th>
       <th class="stat_column">0-29 Missed</th><th class="stat_column">30-39 Missed</th><th class="stat_column">40-49 Missed</th><th class="stat_column">50+ Missed</th>
-      <th>Proj.</th><th>Points</th></tr>
+      <th class="stat_column">Proj.</th><th>Points</th></tr>
 
-      <tr class="starting {% if pos.player_id == 'noplayer' %}empty{% else %}filled{% endif %}">
-      <td class="team-position"><select data-none-selected-text="{{ pos.position }}" class="selectpicker form-control">{% for acc in pos.position_accepts %}<option title="{{ acc }}">{{ acc }} - Player Name{% endfor %}</select></td><td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ pos.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ pos.position_accepts|stringformat:'i' }}" class="drop-area {{ pos.position }}"><div class="{% if pos.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ pos.player_position }}"><span>{{ pos.player_name }}</span><br><span>{{ pos.player_position }} - ({{ pos.player_team }})</span></div></div></td>
+      <tr data-player-pos="{{ pos.player_position }}" class="{{ pos.position }} starting {% if pos.player_id == 'noplayer' %}empty{% else %}filled{% endif %}">
+      <td class="team-position"><select data-none-selected-text="{{ pos.position }}" class="selectpicker form-control">{% for acc in pos.position_accepts %}<option title="{{ acc }}">{{ acc }} - Player Name{% endfor %}</select></td><td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ pos.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ pos.position_accepts|stringformat:'i' }}" class="drop-area {{ pos.position }}"><div class="{% if pos.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ pos.player_position }}"><span>{{ pos.player_name }}</span><br><span style="font-size: 0.6em;">{{ pos.player_position }} - ({{ pos.player_team }})</span></div></div></td>
       <td class="stat_column">{{ pos.pass.atts }}</td><td class="stat_column">{{ pos.pass.yards }}</td><td class="stat_column">{{ pos.pass.tds }}</td>
       <td class="stat_column">{{ pos.rush.atts }}</td><td class="stat_column">{{ pos.rush.yards }}</td><td class="stat_column">{{ pos.rush.tds }}</td>
       <td class="stat_column">{{ pos.rec.recep }}</td><td class="stat_column">{{ pos.rec.yards }}</td><td class="stat_column">{{ pos.rec.tds }}</td>
-      <td class="stat_column"></td><td>0.00</td><td>0.00</td></tr>
+      <td class="stat_column"></td><td class="stat_column">0.00</td><td>0.00</td></tr>
   {% elif pos.position == "DEF" %}<tr>
       <th style="border-left: 1px solid black;">Defence</th><th></th>
       <th class="stat_column"></th><th class="stat_column"></th><th class="stat_column"></th>
       <th class="stat_column"></th><th class="stat_column"></th><th class="stat_column"></th>
       <th class="stat_column"></th><th class="stat_column"></th><th class="stat_column"></th>
-      <th>Proj.</th><th>Points</th></tr>
+      <th class="stat_column"></th><th class="stat_column">Proj.</th><th>Points</th></tr>
 
-    <tr class="starting {% if pos.player_id == 'noplayer' %}empty{% else %}filled{% endif %}">
-      <td class="team-position"><select data-none-selected-text="{{ pos.position }}" class="selectpicker form-control">{% for acc in pos.position_accepts %}<option title="{{ acc }}">{{ acc }} - Player Name{% endfor %}</select></td><td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ pos.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ pos.position_accepts|stringformat:'i' }}" class="drop-area {{ pos.position }}"><div class="{% if pos.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ pos.player_position }}"><span>{{ pos.player_name }}</span><br><span>{{ pos.player_position }} - ({{ pos.player_team }})</span></div></div></td>
+    <tr data-player-pos="{{ pos.player_position }}" class="{{ pos.position }} starting {% if pos.player_id == 'noplayer' %}empty{% else %}filled{% endif %}">
+      <td class="team-position"><select data-none-selected-text="{{ pos.position }}" class="selectpicker form-control">{% for acc in pos.position_accepts %}<option title="{{ acc }}">{{ acc }} - Player Name{% endfor %}</select></td><td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ pos.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ pos.position_accepts|stringformat:'i' }}" class="drop-area {{ pos.position }}"><div class="{% if pos.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ pos.player_position }}"><span>{{ pos.player_name }}</span><br><span style="font-size: 0.6em;">{{ pos.player_position }} - ({{ pos.player_team }})</span></div></div></td>
       <td class="stat_column">{{ pos.pass.atts }}</td><td class="stat_column">{{ pos.pass.yards }}</td><td class="stat_column">{{ pos.pass.tds }}</td>
       <td class="stat_column">{{ pos.rush.atts }}</td><td class="stat_column">{{ pos.rush.yards }}</td><td class="stat_column">{{ pos.rush.tds }}</td>
       <td class="stat_column">{{ pos.rec.recep }}</td><td class="stat_column">{{ pos.rec.yards }}</td><td class="stat_column">{{ pos.rec.tds }}</td>
-      <td>0.00</td><td>0.00</td></tr>
+      <td class="stat_column"></td><td class="stat_column">0.00</td><td>0.00</td></tr>
   {% else %}
-    <tr class="starting {% if pos.player_id == 'noplayer' %}empty{% else %}filled{% endif %}">
+    <tr data-player-pos="{{ pos.player_position }}" class="{{ pos.position }} starting {% if pos.player_id == 'noplayer' %}empty{% else %}filled{% endif %}">
       <td class="team-position">
-        <select data-none-selected-text="{{ pos.position }}" class="selectpicker form-control">{% for start_pos in starters %}{% ifequal start_pos pos.player_position %}{% for starter in starters|key:start_pos] %}
-          <option value="{{ start_pos }}{{ forloop.counter }}" title="{{ start_pos }}">{{ start_pos }} - {{ starter }}{% endfor %}{% endifequal %}{% endfor %}</select></td>
-      <td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ pos.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ pos.position_accepts|stringformat:'i' }}" class="drop-area {{ pos.position }}"><div class="{% if pos.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ pos.player_position }}"><span>{{ pos.player_name }}</span><br><span>{{ pos.player_position }} - ({{ pos.player_team }})</span></div></div></td>
+        <select {% ifequal pos.player_id "noplayer" %}disabled {% endifequal %}data-none-selected-text="{{ pos.position }}" class="selectpicker form-control">{% for start_pos in starter_order %}{% if start_pos == pos.player_position or pos.player_position in flex_pos and start_pos == 'FLEX' %}{% for starter in starters|key:start_pos %}
+          <option {% ifequal starter pos.player_name  %}selected{% endifequal %} value="{{ start_pos }}-{{ forloop.counter }}" title="{{ start_pos }}">{{ start_pos }} - {{ starter }}{% endfor %}{% endif %}{% endfor %}{% ifnotequal pos.player_id "noplayer" %}<option value="BEN">BEN</option>{% endifnotequal %}</select></td>
+      <td class="player_name"><div data-accepts="{{ pos.position_accepts|stringformat:'i' }}" class="drop-area {{ pos.position }}"><div style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ pos.player_team }}.png"); background-size: cover; background-position: center;' class="{% if pos.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ pos.player_position }}"><span>{{ pos.player_name }}</span><br><span style="font-size: 0.6em;">{{ pos.player_position }} - ({{ pos.player_team }})</span></div></div></td>
       <td class="stat_column">{{ pos.pass.atts }}</td><td class="stat_column">{{ pos.pass.yards }}</td><td class="stat_column">{{ pos.pass.tds }}</td>
       <td class="stat_column">{{ pos.rush.atts }}</td><td class="stat_column">{{ pos.rush.yards }}</td><td class="stat_column">{{ pos.rush.tds }}</td>
       <td class="stat_column">{{ pos.rec.tar }}</td><td class="stat_column">{{ pos.rec.recep }}</td><td class="stat_column">{{ pos.rec.yards }}</td><td class="stat_column">{{ pos.rec.tds }}</td>
-      <td>0.00</td><td>0.00</td></tr>
+      <td class="stat_column">0.00</td><td>0.00</td></tr>
   {% endif %}
   {% endfor %}
   <tr class="bench_divider"><td colspan="14">Bench</td></tr>
   {% for ben in bench %}
-    <tr class="bench {% if ben.player_id == 'noplayer' %}empty{% else %}filled{% endif %}{% if forloop.first %} first-bench{% endif %}">
-      <td class="team-position"><select data-none-selected-text="{{ ben.position }}" class="selectpicker form-control">{% for acc in ben.position_accepts %}<option title="{{ acc }}">{{ acc }} - Player Name{% endfor %}</select></td><td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ ben.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ ben.position_accepts|stringformat:'i' }}" class="drop-area {{ ben.position }}"><div class="{% if ben.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ ben.player_position }}"><span>{{ ben.player_name }}</span><br><span>{{ ben.player_position }} - ({{ ben.player_team }})</span></div></div></td>
+    <tr data-player-pos="{{ ben.player_position }}" class="bench {% if ben.player_id == 'noplayer' %}empty{% else %}filled{% endif %}{% if forloop.first %} first-bench{% endif %}">
+      <td class="team-position"><select data-none-selected-text="{{ ben.position }}" class="selectpicker form-control">{% for acc in ben.position_accepts %}<option title="{{ acc }}">{{ acc }} - Player Name{% endfor %}</select></td><td class="player_name" style='background: url("http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ ben.player_team }}.png"); background-size: cover; background-position: center;'><div data-accepts="{{ ben.position_accepts|stringformat:'i' }}" class="drop-area {{ ben.position }}"><div class="{% if ben.player_id != 'noplayer' %}drag-player {% endif %}ui-widget-content {{ ben.player_position }}"><span>{{ ben.player_name }}</span><br><span style="font-size: 0.6em;">{{ ben.player_position }} - ({{ ben.player_team }})</span></div></div></td>
       <td class="stat_column">{{ ben.pass.atts }}</td><td class="stat_column">{{ ben.pass.yards }}</td><td class="stat_column">{{ ben.pass.tds }}</td>
       <td class="stat_column">{{ ben.rush.atts }}</td><td class="stat_column">{{ ben.rush.yards }}</td><td class="stat_column">{{ ben.rush.tds }}</td>
       <td class="stat_column">{{ ben.rec.tar }}</td><td class="stat_column">{{ ben.rec.recep }}</td><td class="stat_column">{{ ben.rec.yards }}</td><td class="stat_column">{{ ben.rec.tds }}</td>
-      <td>0.00</td><td>0.00</td>
+      <td class="stat_column">0.00</td><td>0.00</td>
     </tr>
   {% endfor %}
   </tbody>

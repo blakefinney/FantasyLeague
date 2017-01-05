@@ -92,6 +92,6 @@ def team_home(request, team_id=None):
                     starters[str(pos)] = []
                 starters[str(pos)].append(p_name)
 
-    template_context.update(positions=positions,bench=bench,starters=starters)
+    template_context.update(positions=positions,bench=bench,starters=starters,flex_pos=["RB","WR","TE"],starter_order=TEAM_CONST.STARTER_ORDER)
 
     return render(request, 'base/team_home.html', context=template_context)

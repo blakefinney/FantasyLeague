@@ -99,8 +99,8 @@ body {
     text-align: center;
 }
 
-#PlayerTable th, #PlayerTable td {
-    padding: 4px;
+#PlayerTable th, #PlayerTable td:not(.player_name) {
+    padding: 6px;
 }
 #PlayerTable tr.filled {
     background-color: #FFF;
@@ -116,6 +116,7 @@ body {
 #PlayerTable td.player_name {
     font-weight: 600;
     font-size: 0.9em;
+    width: 12%;
 }
 
 #PlayerTable th, #PlayerTable td.team-position, #PlayerTable tr.bench_divider {
@@ -123,7 +124,7 @@ body {
 }
 
 #PlayerTable .drag-player {
-    cursor: move;
+    padding:10px;
 }
 
 @media (min-width: 767px) {
@@ -132,4 +133,5 @@ body {
 
 @media (max-width: 767px) {
     #PlayerTable .stat_column, #PlayerTable .desktop-pos {display: none;}
+    #PlayerTable td.player_name {width: 50%;}
 }
