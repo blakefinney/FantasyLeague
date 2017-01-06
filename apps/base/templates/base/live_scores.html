@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load custom_filters %}
+<div id="MainGameHolder">
+<div id="HomeTeam">
+    {% for p in positions %}
+        {{ p.position }}
+    {% endfor %}
+</div>
+<div id="AwayTeam"></div>
+</div>
+{% endblock %}
