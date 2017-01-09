@@ -135,3 +135,37 @@ body {
     #PlayerTable .stat_column, #PlayerTable .desktop-pos {display: none;}
     #PlayerTable td.player_name {width: 50%;}
 }
+
+/* Live Scores Page */
+.live-score-player{
+    background-color: #FFF;
+    border-radius: 20px;
+    border-color: #111;
+    border-style: double;
+    padding: 5px;
+    height: 20%;
+}
+.live-score-player-image-holder {
+    display: inline-block;
+}
+.live-score-info-holder {
+    width: 100%;
+    display: inline-block;
+}
+.live-score-player-score {
+    display: inline-block;
+    font-size: 1.5em;
+    width: 55%;
+    paddings: 0px 4px;
+}
+.live-score-summary {
+    font-size: 0.5em;
+}
+@media (max-width: 767px) {
+    .live-score-player-image-holder {
+        width: 45%;
+    }
+    .live-score-player-image-holder img {
+        width: 100%;
+    }
+}

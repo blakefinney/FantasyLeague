@@ -27,6 +27,49 @@ CACHES = {
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+PASSING = "passing"
+RUSHING = 'rushing'
+RECEIVING = 'receiving'
+KICKING = 'kicking'
+YARDS = 'yards'
+RECEPTIONS = 'receptions'
+TOUCHDOWNS = 'touchdowns'
+INTERCEPTIONS = 'interceptions'
+FUMBLES = 'fumbles'
+ONEBONUS = '100bonus'
+TWOBONUS = '200bonus'
+THREEBONUS = '300bonus'
+FOURBONUS = '400bonus'
+
+
+
+SCORING_SYSTEM = {
+    PASSING: {
+        YARDS: 0.05,
+        TOUCHDOWNS: 5,
+        INTERCEPTIONS: -2,
+        THREEBONUS: 1,
+        FOURBONUS: 2
+    },
+    RUSHING: {
+        YARDS: 0.1,
+        TOUCHDOWNS: 6,
+        FUMBLES: -2,
+        ONEBONUS: 1,
+        TWOBONUS: 2
+    },
+    RECEIVING: {
+        YARDS: 0.1,
+        RECEPTIONS: 1,
+        TOUCHDOWNS: 6,
+        ONEBONUS: 1,
+        TWOBONUS: 2
+    },
+    KICKING: {
+
+    }
+}
+
 
 # DJANGO DEBUG TOOLBAR SETTINGS
 # https://django-debug-toolbar.readthedocs.org

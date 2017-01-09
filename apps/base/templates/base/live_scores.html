@@ -1,12 +1,44 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load custom_filters %}
+<h1>Live Scores</h1>
+
 <div id="MainGameHolder">
-<div id="HomeTeam">
+<div id="HomeTeam" style="float: left; width: 49%;">
+  <h4>Home - {{ team1score }}</h4>
     {% for p in positions %}
-        {{ p.position }}
+  <div class="live-score-player">
+    <div class="live-score-player-image-holder" style="float: left; background-image: url('http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ p.player_team }}.png'); background-size: cover; background-position: center;">
+      <img src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{{ p.esb_id }}.png"/>
+    </div>
+    <div class="live-score-player-score">
+      {{ p.score }}
+      <div class="live-score-summary">{% for s in p.score_summary %}<div>{{ s }}</div>{% endfor %}</div>
+    </div>
+    <div class="live-score-info-holder">
+      <div style="width: 100%; display: inline-block;">{{ p.player_name }}</div>
+    </div>
+  </div>
+  <br>
     {% endfor %}
 </div>
-<div id="AwayTeam"></div>
+<div id="AwayTeam" style="float: right; width: 49%;">
+  <h4>Away - {{ team2score }}</h4>
+  {% for p2 in positions2 %}
+  <div class="live-score-player">
+    <div class="live-score-player-score">
+      {{ p2.score }}
+      <div class="live-score-summary">{% for s in p2.score_summary %}<div>{{ s }}</div>{% endfor %}</div>
+    </div>
+    <div class="live-score-player-image-holder" style="float: right; background-image: url('http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ p2.player_team }}.png'); background-size: cover; background-position: center;">
+      <img src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{{ p2.esb_id }}.png"/>
+    </div>
+    <div class="live-score-info-holder">
+      <div style="width: 100%; display: inline-block;">{{ p2.player_name }}</div>
+    </div>
+  </div>
+  <br>
+    {% endfor %}
+</div>
 </div>
 {% endblock %}
