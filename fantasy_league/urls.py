@@ -1,4 +1,4 @@
-""" Default urlconf for {{ project_name }} """
+""" Default urlconf for fantasy_league """
 
 from django.conf import settings
 from django.conf.urls import include, url

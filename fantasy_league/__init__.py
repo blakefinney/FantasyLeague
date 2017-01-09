@@ -1,1 +1,1 @@
-""" {{ project_name }} """
+""" fantasy_league """

@@ -3,8 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from apps.base.constants import TEAM_CONST, POSITIONS
 from apps.base.helpers import *
+from apps.base.models import Team
 import nflgame
-import nfldb
+try:
+    import nfldb
+except ImportError:
+    nfldb = None
+    pass
 
 # Test team here
 
@@ -16,16 +21,17 @@ def team_home(request, team_id=None):
     """ Story View """
     template_context = {}
     # Fetch Current Team
+    display_team = Team.objects.get(team_id="Team-"+team_id)
+    template_context.update({"team_name": display_team.team_name})
     positions = []
     bench = []
     starters = {}
 
     # Test Team
-    team = settings.TEST_TEAM
+    team = display_team.get_roster()
 
-    db = nfldb.connect()
-
-
+    if nfldb:
+        db = nfldb.connect()
 
     for pos in TEAM_CONST.STARTER_ORDER:
         no_of_pos = TEAM_CONST.STARTING_SPOTS[pos]
@@ -34,9 +40,11 @@ def team_home(request, team_id=None):
                 p_id = 'noplayer'
                 if len(team['bench']) > i:
                     p_id = team['bench'][i]
-                q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
-                q.player(player_id=p_id)
-                result = q.as_aggregate()
+                result = []
+                if nfldb:
+                    q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
+                    q.player(player_id=p_id)
+                    result = q.as_aggregate()
                 if len(result):
                     stats = result[0]
                     bench.append({
@@ -53,14 +61,16 @@ def team_home(request, team_id=None):
                 else:
                     bench.append({
                         "position": str(pos),
-                        "player_id": p_id,
+                        "player_id": "noplayer",
                         "player_name": 'Empty'
                     })
             else:
                 p_id = team['starting'][pos][i]
-                q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
-                q.player(player_id=p_id)
-                result = q.as_aggregate()
+                result = []
+                if nfldb:
+                    q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
+                    q.player(player_id=p_id)
+                    result = q.as_aggregate()
                 p_name = 'Empty'
                 if len(result):
                     stats = result[0]
@@ -79,14 +89,18 @@ def team_home(request, team_id=None):
                 else:
                     positions.append({
                         "position": str(pos),
-                        "player_id": p_id,
+                        "player_id": "noplayer",
                         "player_name": 'Empty'
                     })
                 if str(pos) not in starters:
                     starters[str(pos)] = []
                 starters[str(pos)].append(p_name)
 
-    template_context.update(positions=positions,bench=bench,starters=starters,flex_pos=["RB","WR","TE"],starter_order=TEAM_CONST.STARTER_ORDER)
+    template_context.update(positions=positions,
+                            bench=bench,
+                            starters=starters,
+                            flex_pos=["RB","WR","TE"],
+                            starter_order=TEAM_CONST.STARTER_ORDER)
 
     return render(request, 'base/team_home.html', context=template_context)
 
@@ -137,7 +151,7 @@ def live_scores(request):
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                             "player_id": pid,
-                            "esb_id": player_in_game.player.esb_id,
+                            #"esb_id": player_in_game.player.esb_id,
                             "player_name": player_in_game.player.full_name,
                             "player_position": str(player_in_game.player.position),
                             "player_team": player_in_game.player.team,
@@ -158,7 +172,7 @@ def live_scores(request):
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                             "player_id": pid,
-                            "esb_id": player2_in_game.player.esb_id,
+                            #"esb_id": player2_in_game.player.esb_id,
                             "player_name": player2_in_game.player.full_name,
                             "player_position": str(player2_in_game.player.position),
                             "player_team": player2_in_game.player.team,
@@ -180,7 +194,7 @@ def live_scores(request):
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                             "player_id": pid,
-                            "esb_id": player_details.esb_id,
+                            #"esb_id": player_details.esb_id,
                             "player_name": player_details.full_name,
                             "player_position": str(player_details.position),
                             "player_team": player_details.team,
@@ -197,7 +211,7 @@ def live_scores(request):
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                             "player_id": pid,
-                            "esb_id": player_details2.esb_id,
+                            #"esb_id": player_details2.esb_id,
                             "player_name": player_details2.full_name,
                             "player_position": str(player_details2.position),
                             "player_team": player_details2.team,
@@ -205,6 +219,6 @@ def live_scores(request):
                         })
 
     template_context.update(team=team, starter_order=TEAM_CONST.STARTER_ORDER, positions=positions, positions2=positions2,
-                            team1score=team1score, team2score=team2score)
+                            team1score=team1score, team2score=team2score, starter_length=range(0,len(positions)))
 
     return render(request, 'base/live_scores.html', context=template_context)

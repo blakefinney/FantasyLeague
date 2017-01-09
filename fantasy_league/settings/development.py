@@ -77,7 +77,12 @@ def show_toolbar(request):
     return not request.is_ajax() and request.user and request.user.is_superuser
 
 MIDDLEWARE_CLASSES += ["debug_toolbar.middleware.DebugToolbarMiddleware", ]
-INSTALLED_APPS += ["debug_toolbar", ]
+INSTALLED_APPS += ["debug_toolbar", "push_notifications"]
+
+PUSH_NOTIFICATIONS_SETTINGS = {
+    "GCM_API_KEY": "<your api="" key="">",
+    "APNS_CERTIFICATE": "/path/to/your/certificate.pem",
+}
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,

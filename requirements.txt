@@ -10,6 +10,7 @@ Django==1.10
 django-appconf==1.0.2
 django-compressor==2.1
 django-debug-toolbar==1.5
+django-push-notifications==1.4.1
 docutils==0.12
 ecdsa==0.13
 enum34==1.1.6
