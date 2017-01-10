@@ -39,16 +39,17 @@ class Roster(models.Model):
 
     def get_roster(self):
         return {"starting": {
-                        "QB":[self.QB1,self.QB2],
-                        "RB":[self.RB1,self.RB2],
-                        "WR":[self.WR1,self.WR2],
-                        "TE":[self.TE1],
-                        "FLEX":[self.FLEX1,self.FLEX2,self.FLEX3],
-                        "K":[self.K1],
-                        "DEF":[self.DEF1]
+                        "QB": [self.QB1, self.QB2],
+                        "RB": [self.RB1, self.RB2],
+                        "WR": [self.WR1, self.WR2],
+                        "TE": [self.TE1],
+                        "FLEX": [self.FLEX1, self.FLEX2, self.FLEX3],
+                        "K": [self.K1],
+                        "DEF": [self.DEF1]
                     },
-                "bench":[self.BENCH.split(',')]
+                "bench": self.BENCH.split(',')
             }
+
     def set_roster(self, lineup_object):
         do = 'nothing'
         #self.QB1 = lineup_array[0] or 'noplayer'
@@ -63,6 +64,7 @@ class Roster(models.Model):
         #self.FLEX3 = lineup_array[9] or 'noplayer'
         #self.K1 = lineup_array[10] or 'noplayer'
         #self.DEF1 = lineup_array[11] or 'noplayer'
+
 
 
 class Team(models.Model):

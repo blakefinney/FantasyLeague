@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load custom_filters %}
-<h1>Live Scores</h1>
+{% load static %}
+{% block js %}
+<script type="text/javascript" async src="{% static 'js/live_scores.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div>
+    <h2 style="margin-top: 0px; display: inline-block;">Live Scores</h2>
+    <span style="float: right;"><select class="selectpicker form-control" data-none-selected-text="">{% for w in weeks %}<option>Week {{ w }}</option>{% endfor %}</select></span>
+</div>
 
 <div id="MainGameHolder">
-<div id="TeamNameHolder"><h4>Home - {{ team1score }}</h4><h4>Away - {{ team2score }}</h4></div>
+<div id="TeamNameHolder"><h4 style="width: 50%; display:inline-block">Home - {{ team1score }}</h4><h4 style="width: 50%; display:inline-block; text-align: right;">{{ team2score }} - Away</h4></div>
 
     {% for p in starter_length %}
         <div class="live-score-row">

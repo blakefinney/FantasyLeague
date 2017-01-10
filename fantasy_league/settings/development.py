@@ -40,6 +40,16 @@ ONEBONUS = '100bonus'
 TWOBONUS = '200bonus'
 THREEBONUS = '300bonus'
 FOURBONUS = '400bonus'
+XP_MADE = 'madeXP'
+XP_MISS = 'missXP'
+MADE_20 = 'Made20'
+MADE_30 = 'Made30'
+MADE_40 = 'Made40'
+MADE_50 = 'Made50'
+MISS_20 = 'Miss20'
+MISS_30 = 'Miss30'
+MISS_40 = 'Miss40'
+MISS_50 = 'Miss50'
 
 
 
@@ -66,7 +76,16 @@ SCORING_SYSTEM = {
         TWOBONUS: 2
     },
     KICKING: {
-
+        XP_MADE: 1,
+        XP_MISS: -2,
+        MADE_20: 3,
+        MADE_30: 4,
+        MADE_40: 5,
+        MADE_50: 6,
+        MISS_20: -2,
+        MISS_30: -1.5,
+        MISS_40: -1,
+        MISS_50: 0,
     }
 }
 
