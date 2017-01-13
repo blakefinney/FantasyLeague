@@ -26,20 +26,26 @@ CACHES = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
+# Current Season
+CURRENT_SEASON = 2016
+# Types
 PASSING = "passing"
 RUSHING = 'rushing'
 RECEIVING = 'receiving'
 KICKING = 'kicking'
+DEFENCE = 'defence'
+# Offence Stats
 YARDS = 'yards'
 RECEPTIONS = 'receptions'
 TOUCHDOWNS = 'touchdowns'
 INTERCEPTIONS = 'interceptions'
 FUMBLES = 'fumbles'
+# Bonuses
 ONEBONUS = '100bonus'
 TWOBONUS = '200bonus'
 THREEBONUS = '300bonus'
 FOURBONUS = '400bonus'
+# Kicking
 XP_MADE = 'madeXP'
 XP_MISS = 'missXP'
 MADE_20 = 'Made20'
@@ -50,7 +56,19 @@ MISS_20 = 'Miss20'
 MISS_30 = 'Miss30'
 MISS_40 = 'Miss40'
 MISS_50 = 'Miss50'
-
+# Defence
+CONCEDE_35 = 'Conc35'
+CONCEDE_28 = 'Conc28'
+CONCEDE_21 = 'Conc21'
+CONCEDE_14 = 'Conc14'
+CONCEDE_7 = 'Conc7'
+CONCEDE_1 = 'Conc1'
+CONCEDE_0 = 'Conc0'
+SACK = 'sack'
+FUMBLE_REC = 'fumblerec'
+SAFETIES = 'safeties'
+PICK_SIX = 'picksix'
+FUMBLE_SIX = 'fumblesix'
 
 
 SCORING_SYSTEM = {
@@ -86,6 +104,21 @@ SCORING_SYSTEM = {
         MISS_30: -1.5,
         MISS_40: -1,
         MISS_50: 0,
+    },
+    DEFENCE: {
+        CONCEDE_35: -4,
+        CONCEDE_28: -1,
+        CONCEDE_21: 0,
+        CONCEDE_14: 1,
+        CONCEDE_7: 4,
+        CONCEDE_1: 7,
+        CONCEDE_0: 10,
+        SACK: 1,
+        FUMBLE_REC: 2,
+        INTERCEPTIONS: 2,
+        SAFETIES: 2,
+        PICK_SIX: 6,
+        FUMBLE_SIX: 6,
     }
 }
 

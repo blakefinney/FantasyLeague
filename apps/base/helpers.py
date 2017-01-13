@@ -20,7 +20,7 @@ def get_fg_lengths(game, player):
     return fgs
 
 
-def calculate_week_score (player_stats, fgs):
+def calculate_week_score(player_stats, fgs):
     score = 0
     text_array = []
     if player_stats:
@@ -123,3 +123,112 @@ def calculate_week_score (player_stats, fgs):
                 text_array.append(str(m_fifties) + " 50+ FG Miss")
 
     return score, text_array
+
+
+def calculate_def_score(team, game):
+    score = 0
+    text_array = []
+    if len(game):
+        game = game[0]
+        if game.away == team:
+            points_against = game.score_home
+        else:
+            points_against = game.score_away
+        # Get points based on game score
+        if points_against > 35:
+            score += settings.SCORING_SYSTEM['defence']['Conc35']
+            text_array.append('PA 35+')
+        elif points_against > 27:
+            score += settings.SCORING_SYSTEM['defence']['Conc28']
+            text_array.append('PA 28-34')
+        elif points_against > 20:
+            score += settings.SCORING_SYSTEM['defence']['Conc21']
+            text_array.append('PA 21-27')
+        elif points_against > 13:
+            score += settings.SCORING_SYSTEM['defence']['Conc14']
+            text_array.append('PA 14-20')
+        elif points_against > 6:
+            score += settings.SCORING_SYSTEM['defence']['Conc7']
+            text_array.append('PA 7-13')
+        elif points_against > 0:
+            score += settings.SCORING_SYSTEM['defence']['Conc1']
+            text_array.append('PA 1-6')
+        else:
+            score += settings.SCORING_SYSTEM['defence']['Conc0']
+            text_array.append('Shutout')
+
+        # Get other game stats for defence
+        sks, frc, frc_td, ints, int_td, safe = 0, 0, 0, 0, 0, 0
+        for p in nflgame.combine_plays([game]).filter(team=team):
+            # Sacks
+            if p.defense_sk > 0:
+                sks += 1
+            # Fumbles
+            if p.defense_frc > 0:
+                frc += 1
+                if p.defense_frc_tds > 0:
+                    frc_td += 1
+            # Interceptions
+            if p.defense_int > 0:
+                ints += 1
+                if p.defense_int_tds > 0:
+                    int_td += 1
+            # Safeties
+            if p.defense_safe > 0:
+                safe += 1
+        # Any Sacks?
+        if sks:
+            score += sks * settings.SCORING_SYSTEM['defence']['sack']
+            text_array.append(str(sks)+' sacks')
+        # Fumble Recoveries
+        if frc:
+            score += frc * settings.SCORING_SYSTEM['defence']['fumblerec']
+            text_array.append(str(frc) + ' Fumble Rec')
+            if frc_td:
+                score += frc_td * settings.SCORING_SYSTEM['defence']['fumblesix']
+                text_array.append(str(frc_td) + ' Fumble TDs')
+        # Interceptions
+        if ints:
+            score += ints * settings.SCORING_SYSTEM['defence']['interceptions']
+            text_array.append(str(ints) + ' INTs')
+            if int_td:
+                score += int_td * settings.SCORING_SYSTEM['defence']['picksix']
+                text_array.append(str(int_td) + ' Pick 6s')
+        # Safeties
+        if safe:
+            score += safe * settings.SCORING_SYSTEM['defence']['safeties']
+            text_array.append(str(safe) + ' Safeties')
+
+        return score, text_array
+    else:
+        return 0, ['']
+
+
+def get_player_opponent_string(team, week, year):
+    if team == 'JAC':
+        team = 'JAX'
+    try:
+        game = nflgame.games(year, week=week, kind='REG', home=team, away=team)
+    except TypeError as e:
+        # Likely team on bye week, returned NoneType Error
+        game = []
+    if len(game):
+        game = game[0]
+        if game.home == team:
+            ret_string = 'v ' + game.away
+        else:
+            ret_string = '@ ' + game.home
+        if game.game_over():
+            # Final Score
+            ret_string += ' | ' + game.nice_score()
+        elif game.playing():
+            # LIVE
+            ret_string += ' | ' + game.nice_score() + ' LIVE'
+        else:
+            # Pre-game
+            ret_string += ' | Kickoff Time:' + game.time
+
+    else:
+        ret_string = 'Bye Week'
+
+    return ret_string

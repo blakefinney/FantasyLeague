@@ -172,53 +172,103 @@ def live_scores(request):
                 pid2 = team2['starting'][pos][i]
             found = False
             found2 = False
-            player_details = nflgame.players.get(pid)
-            player_details2 = nflgame.players.get(pid2)
-            for game in week_games:
-                player_in_game = game.players.playerid(pid)
-                player2_in_game = game.players.playerid(pid2)
-                if player_in_game:
+            if pos != 'DEF':
+                player_details = nflgame.players.get(pid)
+                player_details2 = nflgame.players.get(pid2)
+                for game in week_games:
+                    player_in_game = game.players.playerid(pid)
+                    player2_in_game = game.players.playerid(pid2)
+                    if player_in_game:
+                        found = True
+                        if pos == 'BEN':
+                            s = 's'#team['bench'][i] = player_in_game
+                        else:
+                            fgs = []
+                            if player_in_game.kicking_fga:
+                                fgs = get_fg_lengths(game, player_in_game)
+                            score, score_summary = calculate_week_score(player_in_game, fgs)
+                            positions.append({
+                                "position": str(pos),
+                                "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
+                                "player_id": pid,
+                                #"esb_id": player_in_game.player.esb_id,
+                                "player_name": player_in_game.player.full_name,
+                                "player_position": str(player_in_game.player.position),
+                                "player_team": player_in_game.player.team,
+                                "score": ("%.2f" % score),
+                                "score_summary": score_summary,
+                                "opponent": get_player_opponent_string(player_in_game.player.team, find_week, settings.CURRENT_SEASON)
+                            })
+                            team1score += score
+                    if player2_in_game:
+                        found2 = True
+                        if pos == 'BEN':
+                            s = 's'#team['bench'][i] = player_in_game
+                        else:
+                            fgs2 = []
+                            if player2_in_game.kicking_fga:
+                                fgs2 = get_fg_lengths(game, player2_in_game)
+                            score2, score2_summary = calculate_week_score(player2_in_game, fgs2)
+                            positions2.append({
+                                "position": str(pos),
+                                "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
+                                "player_id": pid,
+                                #"esb_id": player2_in_game.player.esb_id,
+                                "player_name": player2_in_game.player.full_name,
+                                "player_position": str(player2_in_game.player.position),
+                                "player_team": player2_in_game.player.team,
+                                "score": ("%.2f" % score2),
+                                "score_summary": score2_summary,
+                                "opponent": get_player_opponent_string(player2_in_game.player.team, find_week, settings.CURRENT_SEASON)
+                            })
+                            team2score += score2
+            else:
+                if pid and pid != 'noplayer':
+                    # Active defence
                     found = True
-                    if pos == 'BEN':
-                        s = 's'#team['bench'][i] = player_in_game
-                    else:
-                        fgs = []
-                        if player_in_game.kicking_fga:
-                            fgs = get_fg_lengths(game, player_in_game)
-                        score, score_summary = calculate_week_score(player_in_game, fgs)
-                        positions.append({
-                            "position": str(pos),
-                            "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
-                            "player_id": pid,
-                            #"esb_id": player_in_game.player.esb_id,
-                            "player_name": player_in_game.player.full_name,
-                            "player_position": str(player_in_game.player.position),
-                            "player_team": player_in_game.player.team,
-                            "score": ("%.2f" % score),
-                            "score_summary": score_summary
-                        })
-                        team1score += score
-                if player2_in_game:
+                    def1 = pid.split('-')[1]
+                    try:
+                        def_game = nflgame.games(2016, week=find_week, kind='REG', home=def1, away=def1)
+                        def_score, def_score_summary = calculate_def_score(def1, def_game)
+                    except TypeError as e:
+                        # Defence on bye week
+                        def_score, def_score_summary = 0, []
+                    positions.append({
+                        "position": str(pos),
+                        "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
+                        "player_id": pid,
+                        # "esb_id": player_in_game.player.esb_id,
+                        "player_name": def1+' DEF/ST',
+                        "player_position": 'DEF',
+                        "player_team": def1,
+                        "score": ("%.2f" % def_score),
+                        "score_summary": def_score_summary,
+                        "opponent": get_player_opponent_string(def1, find_week, settings.CURRENT_SEASON)
+                    })
+                    team1score += def_score
+                if pid2 and pid2 != 'noplayer':
+                    # Active defence
                     found2 = True
-                    if pos == 'BEN':
-                        s = 's'#team['bench'][i] = player_in_game
-                    else:
-                        fgs2 = []
-                        if player2_in_game.kicking_fga:
-                            fgs2 = get_fg_lengths(game, player2_in_game)
-                        score2, score2_summary = calculate_week_score(player2_in_game, fgs2)
-                        positions2.append({
-                            "position": str(pos),
-                            "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
-                            "player_id": pid,
-                            #"esb_id": player2_in_game.player.esb_id,
-                            "player_name": player2_in_game.player.full_name,
-                            "player_position": str(player2_in_game.player.position),
-                            "player_team": player2_in_game.player.team,
-                            "score": ("%.2f" % score2),
-                            "score_summary": score2_summary
-                        })
-                        team2score += score2
+                    def2 = pid2.split('-')[1]
+                    try:
+                        def2_game = nflgame.games(2016, week=find_week, kind='REG', home=def2, away=def2)
+                        def_score2, def_score_summary2 = calculate_def_score(def2, def2_game)
+                    except TypeError as e:
+                        # Defence on bye week
+                        def_score2, def_score_summary2 = 0, []
+                    positions2.append({
+                        "position": str(pos),
+                        "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
+                        "player_id": pid,
+                        # "esb_id": player_in_game.player.esb_id,
+                        "player_name": def2 + ' DEF/ST',
+                        "player_position": 'DEF',
+                        "player_team": def2,
+                        "score": ("%.2f" % def_score2),
+                        "score_summary": def_score_summary2,
+                        "opponent": get_player_opponent_string(def2, find_week, settings.CURRENT_SEASON)
+                    })
+                    team2score += def_score2
             if not found:
                 if pos == 'BEN':
                     if pid != 'noplayer':
@@ -234,7 +284,20 @@ def live_scores(request):
                             "player_name": player_details.full_name,
                             "player_position": str(player_details.position),
                             "player_team": player_details.team,
-                            "score": "0.00"
+                            "score": "0.00",
+                            "opponent": get_player_opponent_string(player_details.team, find_week, settings.CURRENT_SEASON)
+                        })
+                    else:
+                        positions.append({
+                            "position": str(pos),
+                            "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
+                            "player_id": pid,
+                            # "esb_id": player_details.esb_id,
+                            "player_name": 'Empty',
+                            "player_position": 'Empty',
+                            "player_team": 'Empty',
+                            "score": "0.00",
+                            "opponent": ''
                         })
             if not found2:
                 if pos == 'BEN':
@@ -246,15 +309,29 @@ def live_scores(request):
                         positions2.append({
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
-                            "player_id": pid,
+                            "player_id": pid2,
                             #"esb_id": player_details2.esb_id,
                             "player_name": player_details2.full_name,
                             "player_position": str(player_details2.position),
                             "player_team": player_details2.team,
-                            "score": "0.00"
+                            "score": "0.00",
+                            "opponent": get_player_opponent_string(player_details2.team, find_week, settings.CURRENT_SEASON)
+                        })
+                    else:
+                        positions2.append({
+                            "position": str(pos),
+                            "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
+                            "player_id": pid2,
+                            # "esb_id": player_details.esb_id,
+                            "player_name": 'Empty',
+                            "player_position": 'Empty',
+                            "player_team": 'Empty',
+                            "score": "0.00",
+                            "opponent": ''
                         })
 
     template_context.update(team=team, starter_order=TEAM_CONST.STARTER_ORDER, positions=positions, positions2=positions2,
-                            team1score=team1score, team2score=team2score, starter_length=range(0,len(positions)), weeks=range(1,weeks+1))
+                            team1score=team1score, team2score=team2score, starter_length=range(0,len(positions)), weeks=range(1,weeks+1),
+                            find_week=find_week)
 
     return render(request, 'base/live_scores.html', context=template_context)

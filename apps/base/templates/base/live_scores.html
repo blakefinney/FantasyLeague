@@ -7,7 +7,7 @@
 {% block content %}
 <div>
     <h2 style="margin-top: 0px; display: inline-block;">Live Scores</h2>
-    <span style="float: right;"><select class="selectpicker form-control" data-none-selected-text="">{% for w in weeks %}<option>Week {{ w }}</option>{% endfor %}</select></span>
+    <span style="float: right;"><select class="selectpicker form-control" data-none-selected-text="">{% for w in weeks %}<option{% ifequal find_week w %} selected {% endifequal %}>Week {{ w }}</option>{% endfor %}</select></span>
 </div>
 
 <div id="MainGameHolder">
@@ -17,8 +17,8 @@
         <div class="live-score-row">
         {% with positions|key:p as home_player %}
         {% with positions2|key:p as away_player%}
-    <div class="live-score-player">
-        <div class="live-score-player-image-holder" style="float: left; background-image: url('http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ home_player.player_team }}.png'); background-size: cover; background-position: center;">
+    <div class="live-score-player{% if home_player.opponent == 'Bye Week' %} bye-week{% endif %}{% if home_player.player_id == 'noplayer' %} empty{% endif %}">
+        <div class="live-score-player-image-holder" style="float: left; background-image: url('{% if home_player.player_id != 'noplayer' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ home_player.player_team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;">
             <img src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{% if home_player.esb_id %}{{ home_player.esb_id }}{% else %}{{ home_player.player_team }}{% endif %}.png"/>
         </div>
         <div class="live-score-player-score">
@@ -27,9 +27,10 @@
         </div>
         <div class="live-score-info-holder">
             <div style="width: 100%; display: inline-block;">{{ home_player.player_name }}</div>
+            <div style="font-size: 0.7em; color: #777;">{{ home_player.opponent }}</div>
         </div>
     </div>
-    <div class="live-score-player" style="text-align: right;">
+    <div class="live-score-player{% if away_player.opponent == 'Bye Week' %} bye-week{% endif %}" style="text-align: right;">
         <div class="live-score-player-score">
             {{ away_player.score }}
             <div class="live-score-summary">{% for s in away_player.score_summary %}<div>{{ s }}</div>{% endfor %}</div>
@@ -39,11 +40,14 @@
         </div>
         <div class="live-score-info-holder">
             <div style="width: 100%; display: inline-block;">{{ away_player.player_name }}</div>
+            <div style="font-size: 0.7em; color: #777;">{{ away_player.opponent }}</div>
         </div>
   </div>
         {% endwith %}
         {% endwith %}
         </div>
     {% endfor %}
+<hr style="border-top: 1px solid #000;">
+<div>Bench Here</div>
 </div>
 {% endblock %}
