@@ -1,6 +1,6 @@
 """Base models"""
 from django.db import models
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class TeamManager(models.Manager):
     def create_team(self, team_id):
@@ -66,7 +66,6 @@ class Roster(models.Model):
         #self.DEF1 = lineup_array[11] or 'noplayer'
 
 
-
 class Team(models.Model):
     # Team Manager Class
     objects = TeamManager()
@@ -81,7 +80,6 @@ class Team(models.Model):
     team_owner = models.CharField(max_length=30, default="noowner")
     team_name = models.CharField(max_length=30, default="Insert Team Name Here")
     championships = models.IntegerField(default=0)
-    schedule = None
 
     def get_roster(self):
         return self.roster.get_roster()
@@ -90,3 +88,55 @@ class Team(models.Model):
         return self.roster.set_roster(lineup_object)
 
     pass
+
+
+class Playoffs(models.Model):
+    playoff_teams = models.IntegerField(default=2)
+
+
+class Schedule(models.Model):
+    year = models.IntegerField(default=0)
+    number_of_weeks = models.IntegerField(default=1)
+    playoffs = models.OneToOneField(
+        Playoffs,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+    def get_number_of_weeks(self):
+        return self.number_of_weeks
+
+    def get_matchup(self, team_id=None, week_no=None):
+        opponent_id = None
+        try:
+            matchup = Matchup.objects.get(parent_schedule=self, week_number=week_no, home_team=team_id)
+            opponent_id = matchup.away_team
+        except ObjectDoesNotExist:
+            # Team not at home, check away
+            matchup = None
+        if not matchup:
+            try:
+                matchup = Matchup.objects.get(parent_schedule=self, week_number=week_no, away_team=team_id)
+                opponent_id = matchup.home_team
+            except ObjectDoesNotExist:
+                # Team not away, on bye week so return None
+                matchup = None
+        return matchup, opponent_id
+
+
+class Matchup(models.Model):
+    parent_schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    week_number = models.IntegerField(default=0)
+
+    home_team = models.CharField(max_length=10, default="Team-0")
+    away_team = models.CharField(max_length=10, default="Team-0")
+    home_score = models.IntegerField(default=0)
+    away_score = models.IntegerField(default=0)
+
+
+class Standings(models.Model):
+    parent_schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    division_name = models.CharField(max_length=20, default="Division Name here")
+    number_of_teams = models.IntegerField(default=1)
+    playoff_teams = models.IntegerField(default=1)
+

@@ -132,8 +132,10 @@ def calculate_def_score(team, game):
         game = game[0]
         if game.away == team:
             points_against = game.score_home
+            opponent = game.home
         else:
             points_against = game.score_away
+            opponent = game.away
         # Get points based on game score
         if points_against > 35:
             score += settings.SCORING_SYSTEM['defence']['Conc35']
@@ -159,7 +161,7 @@ def calculate_def_score(team, game):
 
         # Get other game stats for defence
         sks, frc, frc_td, ints, int_td, safe = 0, 0, 0, 0, 0, 0
-        for p in nflgame.combine_plays([game]).filter(team=team):
+        for p in nflgame.combine_plays([game]).filter(team=opponent):
             # Sacks
             if p.defense_sk > 0:
                 sks += 1

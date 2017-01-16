@@ -9,9 +9,17 @@
     <h2 style="margin-top: 0px; display: inline-block;">Live Scores</h2>
     <span style="float: right;"><select class="selectpicker form-control" data-none-selected-text="">{% for w in weeks %}<option{% ifequal find_week w %} selected {% endifequal %}>Week {{ w }}</option>{% endfor %}</select></span>
 </div>
+    <div id="WeeksGamesHolder">
+        {% for matchup in week_matchups %}
+        <div class="week_matchup">
+            <div class="matchup-team home">{{ matchup.home_team }} - {{ matchup.home_score }}</div>
+            <div class="matchup-team away">{{ matchup.away_team }} - {{ matchup.away_score }}</div>
+        </div>
+        {% endfor %}
+    </div>
 
 <div id="MainGameHolder">
-<div id="TeamNameHolder"><h4 style="width: 50%; display:inline-block">Home - {{ team1score }}</h4><h4 style="width: 50%; display:inline-block; text-align: right;">{{ team2score }} - Away</h4></div>
+<div id="TeamNameHolder"><h4 style="width: 50%; display:inline-block"><span style="font-size: 0.8em;">{{ team_1.team_name }}</span><br>{{ team1score }}</h4><h4 style="width: 50%; display:inline-block; text-align: right;"><span style="font-size: 0.8em;">{{ team_2.team_name }}</span><br>{{ team2score }}</h4></div>
     {% for p in starter_length %}
         <div class="live-score-row">
         {% with positions|key:p as home_player %}

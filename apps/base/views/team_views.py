@@ -1,21 +1,17 @@
 """Views for the team pages"""
-import sys
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from apps.base.constants import TEAM_CONST, POSITIONS
 from apps.base.helpers import *
-from apps.base.models import Team
+from apps.base.models import Team, Schedule, Matchup
 import nflgame
 try:
     import nfldb
 except ImportError:
     nfldb = None
     pass
-
-# Test team here
-
-from django.conf import settings
-
 
 @login_required(login_url='/login/')
 def team_home(request, team_id=None):
@@ -137,10 +133,43 @@ def team_home(request, team_id=None):
 def live_scores(request):
     """ Story View """
     template_context = {}
-    weeks = 17
+    # Use nflgame live to get the current week and year
+    current_year, current_week = nflgame.live.current_year_and_week()
+    if 'week' in request.GET:
+        find_week = int(request.GET['week'])
+    else:
+        find_week = current_week
+    find_kind = "REG"  # Should always be "REG" except testing
+
+    # Execute any week/year testing here before it fetches any other data:
+    #find_week = 1
+
+    schedule = Schedule.objects.get(year=current_year)
+    weeks = schedule.get_number_of_weeks()
+
     # Test Team
-    team_1 = Team.objects.get(team_id="Team-1")
-    team_2 = Team.objects.get(team_id="Team-2")
+    try:
+        team_1 = Team.objects.get(team_owner=request.user.username)
+    except ObjectDoesNotExist:
+        # No team with assigned user, return 1st team
+        team_1 = Team.objects.get(team_id="Team-1")
+
+    week_matchups = Matchup.objects.filter(week_number=find_week)
+    matchup = week_matchups.filter(Q(home_team=team_1.team_id) | Q(away_team=team_1.team_id))
+    # For possible ye Week
+    opponent_id = None
+    if len(matchup):
+        matchup = matchup.first()
+        if matchup.home_team == team_1.team_id:
+            opponent_id = matchup.away_team
+        elif matchup.away_team == team_1.team_id:
+            opponent_id = matchup.home_team
+
+    try:
+        team_2 = Team.objects.get(team_id=opponent_id)
+    except ObjectDoesNotExist:
+        # Team could be on a bye week?
+        team_2 = Team.objects.get(team_id="Team-2")
 
     team = team_1.get_roster()
     team2 = team_2.get_roster()
@@ -154,14 +183,11 @@ def live_scores(request):
     team1score = 0
     team2score = 0
 
-    find_year, find_week = nflgame.live.current_year_and_week()
-    find_kind = "POST" # Should always be "REG" except testing
-    find_week = 2
-
-    if 'week' in request.GET:
-        find_week = int(request.GET['week'])
-
-    week_games = nflgame.games(find_year, week=2, kind=find_kind)
+    try:
+        week_games = nflgame.games(current_year, week=find_week, kind=find_kind)
+    except TypeError as e:
+        # For some reason nflgame failed to get schedule
+        week_games = []
 
     for pos in TEAM_CONST.STARTER_ORDER:
         no_of_pos = TEAM_CONST.STARTING_SPOTS[pos]
@@ -170,12 +196,12 @@ def live_scores(request):
             pid2 = 'noplayer'
             if pos == 'BEN':
                 if len(team['bench']) > i:
-                    pid = team['bench'][i]
+                    pid = team['bench'][i] or 'noplayer'
                 if len(team2['bench']) > i:
-                    pid2 = team2['bench'][i]
+                    pid2 = team2['bench'][i] or 'noplayer'
             else:
-                pid = team['starting'][pos][i]
-                pid2 = team2['starting'][pos][i]
+                pid = team['starting'][pos][i] or 'noplayer'
+                pid2 = team2['starting'][pos][i] or 'noplayer'
             found = False
             found2 = False
             if pos != 'DEF':
@@ -197,7 +223,7 @@ def live_scores(request):
                         if hasattr(player_details, 'injury_status'):
                             injury_status = player_details.injury_status
                         live_status1 = ''
-                        if game.playing:
+                        if game.playing():
                             live_status1 = player_in_live(player_details, game)
                         format_player = {
                                 "position": str(pos),
@@ -213,7 +239,7 @@ def live_scores(request):
                                 "score": ("%.2f" % score),
                                 "score_summary": score_summary,
                                 "opponent": get_player_opponent_string(player_in_game.player.team, find_week,
-                                                                       find_year, find_kind)
+                                                                       current_year, find_kind)
                             }
                         if pos == 'BEN':
                             bench.append(format_player)
@@ -233,7 +259,7 @@ def live_scores(request):
                         if hasattr(player_details2, 'injury_status'):
                             injury_status2 = player_details2.injury_status
                         live_status2 = ''
-                        if game.playing:
+                        if game.playing():
                             live_status2 = player_in_live(player_details2, game)
                         format_player2 = {
                                 "position": str(pos),
@@ -249,7 +275,7 @@ def live_scores(request):
                                 "score": ("%.2f" % score2),
                                 "score_summary": score2_summary,
                                 "opponent": get_player_opponent_string(player2_in_game.player.team, find_week,
-                                                                       find_year, find_kind)
+                                                                       current_year, find_kind)
                             }
                         if pos == 'BEN':
                             bench2.append(format_player2)
@@ -262,7 +288,7 @@ def live_scores(request):
                     found = True
                     def1 = pid.split('-')[1]
                     try:
-                        def_game = nflgame.games(2016, week=find_week, kind='REG', home=def1, away=def1)
+                        def_game = nflgame.games(current_year, week=find_week, kind=find_kind, home=def1, away=def1)
                         def_score, def_score_summary = calculate_def_score(def1, def_game)
                     except TypeError as e:
                         # Defence on bye week
@@ -276,7 +302,7 @@ def live_scores(request):
                         "player_team": def1,
                         "score": ("%.2f" % def_score),
                         "score_summary": def_score_summary,
-                        "opponent": get_player_opponent_string(def1, find_week, find_year, find_kind)
+                        "opponent": get_player_opponent_string(def1, find_week, current_year, find_kind)
                     })
                     team1score += def_score
                 if pid2 and pid2 != 'noplayer':
@@ -284,7 +310,7 @@ def live_scores(request):
                     found2 = True
                     def2 = pid2.split('-')[1]
                     try:
-                        def2_game = nflgame.games(find_year, week=find_week, kind=find_kind, home=def2, away=def2)
+                        def2_game = nflgame.games(current_year, week=find_week, kind=find_kind, home=def2, away=def2)
                         def_score2, def_score_summary2 = calculate_def_score(def2, def2_game)
                     except TypeError as e:
                         # Defence on bye week
@@ -298,7 +324,7 @@ def live_scores(request):
                         "player_team": def2,
                         "score": ("%.2f" % def_score2),
                         "score_summary": def_score_summary2,
-                        "opponent": get_player_opponent_string(def2, find_week, find_year, find_kind)
+                        "opponent": get_player_opponent_string(def2, find_week, current_year, find_kind)
                     })
                     team2score += def_score2
             if not found:
@@ -317,7 +343,7 @@ def live_scores(request):
                             "player_team": player_details.team,
                             "score": "0.00",
                             "opponent": get_player_opponent_string(player_details.team, find_week,
-                                                                   find_year, find_kind)
+                                                                   current_year, find_kind)
                         })
                     else:
                         bench.append({
@@ -345,7 +371,7 @@ def live_scores(request):
                             "player_team": player_details.team,
                             "score": "0.00",
                             "opponent": get_player_opponent_string(player_details.team, find_week,
-                                                                   find_year, find_kind)
+                                                                   current_year, find_kind)
                         })
                     else:
                         positions.append({
@@ -374,7 +400,7 @@ def live_scores(request):
                             "player_team": player_details2.team,
                             "score": "0.00",
                             "opponent": get_player_opponent_string(player_details2.team, find_week,
-                                                                   find_year, find_kind)
+                                                                   current_year, find_kind)
                         })
                     else:
                         bench2.append({
@@ -402,7 +428,7 @@ def live_scores(request):
                             "player_team": player_details2.team,
                             "score": "0.00",
                             "opponent": get_player_opponent_string(player_details2.team, find_week,
-                                                                   find_year, find_kind)
+                                                                   current_year, find_kind)
                         })
                     else:
                         positions2.append({
@@ -416,10 +442,10 @@ def live_scores(request):
                             "opponent": ''
                         })
 
-    template_context.update(team=team, starter_order=TEAM_CONST.STARTER_ORDER, positions=positions,
+    template_context.update(team_1=team_1, team_2=team_2, starter_order=TEAM_CONST.STARTER_ORDER, positions=positions,
                             positions2=positions2,bench=bench, bench2=bench2,team1score=team1score,
                             team2score=team2score, starter_length=range(0,len(positions)),
                             bench_length=range(0,max(TEAM_CONST.STARTING_SPOTS[POSITIONS.BENCH],len(bench),len(bench2))),
-                            weeks=range(1,weeks+1),find_week=find_week)
+                            weeks=range(1,weeks+1),find_week=find_week, week_matchups=week_matchups)
 
     return render(request, 'base/live_scores.html', context=template_context)

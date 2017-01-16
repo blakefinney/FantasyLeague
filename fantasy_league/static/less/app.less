@@ -194,12 +194,46 @@ body {
 .live-score-summary {
     font-size: 0.4em;
 }
+#WeeksGamesHolder {
+    overflow-x: scroll;
+    margin: 10px -20px;
+    height: 12%;
+    white-space: nowrap;
+    padding: 5px;
+}
+.week_matchup {
+    display: inline-block;
+    height: 100%;
+    padding: 10px;
+    background-color: #999;
+    border-radius: 15px;
+    width: 35%;
+    margin: 0px 8px;
+}
 @media (max-width: 767px) {
     .live-score-player-image-holder {
         width: 45%;
     }
 }
 @media (min-width: 768px) {
+    .live-score-row {
+        margin: 10px auto;
+        width: 60%;
+    }
+    .live-score-player {
+        width: 40%;
+    }
+    .live-score-summary div {
+        display: inline-block;
+        margin-left: 2px;
+        font-size: 1.35em;
+    }
+    .live-score-player-score {
+        width: 80%;
+    }
+    .live-score-summary div:not(:last-child)::after {
+        content: ","
+    }
     .live-score-player-image-holder {
         width: 16%;
     }
