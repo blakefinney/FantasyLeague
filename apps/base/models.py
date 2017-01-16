@@ -128,8 +128,8 @@ class Matchup(models.Model):
     parent_schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     week_number = models.IntegerField(default=0)
 
-    home_team = models.CharField(max_length=10, default="Team-0")
-    away_team = models.CharField(max_length=10, default="Team-0")
+    home_team = models.ForeignKey(Team, on_delete=None, related_name='home_team')
+    away_team = models.ForeignKey(Team, on_delete=None, related_name='away_team')
     home_score = models.IntegerField(default=0)
     away_score = models.IntegerField(default=0)
 

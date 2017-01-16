@@ -155,24 +155,21 @@ def live_scores(request):
         team_1 = Team.objects.get(team_id="Team-1")
 
     week_matchups = Matchup.objects.filter(week_number=find_week)
-    matchup = week_matchups.filter(Q(home_team=team_1.team_id) | Q(away_team=team_1.team_id))
+    matchup = week_matchups.filter(Q(home_team=team_1.pk) | Q(home_team=team_1.pk))
     # For possible ye Week
-    opponent_id = None
+    team_2 = None
     if len(matchup):
         matchup = matchup.first()
-        if matchup.home_team == team_1.team_id:
-            opponent_id = matchup.away_team
-        elif matchup.away_team == team_1.team_id:
-            opponent_id = matchup.home_team
-
-    try:
-        team_2 = Team.objects.get(team_id=opponent_id)
-    except ObjectDoesNotExist:
-        # Team could be on a bye week?
-        team_2 = Team.objects.get(team_id="Team-2")
+        if matchup.home_team_id == team_1.pk:
+            team_2 = matchup.away_team
+        elif matchup.away_team_id == team_1.pk:
+            team_2 = matchup.home_team
 
     team = team_1.get_roster()
-    team2 = team_2.get_roster()
+    if team_2:
+        team2 = team_2.get_roster()
+    else:
+        team2 = {}
 
     positions = []
     positions2 = []
@@ -195,13 +192,15 @@ def live_scores(request):
             pid = 'noplayer'
             pid2 = 'noplayer'
             if pos == 'BEN':
-                if len(team['bench']) > i:
+                if 'bench' in team and len(team['bench']) > i:
                     pid = team['bench'][i] or 'noplayer'
-                if len(team2['bench']) > i:
+                if 'bench' in team2 and len(team2['bench']) > i:
                     pid2 = team2['bench'][i] or 'noplayer'
             else:
-                pid = team['starting'][pos][i] or 'noplayer'
-                pid2 = team2['starting'][pos][i] or 'noplayer'
+                if 'starting' in team:
+                    pid = team['starting'][pos][i] or 'noplayer'
+                if 'starting' in team2:
+                    pid2 = team2['starting'][pos][i] or 'noplayer'
             found = False
             found2 = False
             if pos != 'DEF':

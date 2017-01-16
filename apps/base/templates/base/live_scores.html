@@ -12,8 +12,8 @@
     <div id="WeeksGamesHolder">
         {% for matchup in week_matchups %}
         <div class="week_matchup">
-            <div class="matchup-team home">{{ matchup.home_team }} - {{ matchup.home_score }}</div>
-            <div class="matchup-team away">{{ matchup.away_team }} - {{ matchup.away_score }}</div>
+          <div class="matchup-team home"><div class="team-name">{{ matchup.home_team.team_name }}</div><div class="team-score"> - {{ matchup.home_score }}</div></div>
+          <div class="matchup-team away"><div class="team-name">{{ matchup.away_team.team_name }}</div><div class="team-score"> - {{ matchup.away_score }}</div></div>
         </div>
         {% endfor %}
     </div>
