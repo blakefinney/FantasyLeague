@@ -204,11 +204,22 @@ def calculate_def_score(team, game):
         return 0, ['']
 
 
-def get_player_opponent_string(team, week, year):
+def get_player_opponent_string(team, week, year, kind):
     if team == 'JAC':
         team = 'JAX'
     try:
-        game = nflgame.games(year, week=week, kind='REG', home=team, away=team)
+        game = nflgame.games(year, week=week, kind=kind, home=team, away=team)
+        if len(game) == 0:
+            # Game not played/in play
+            future_games = nflgame.live._games_in_week(year=year, week=week, kind=kind)
+            for f_game in future_games:
+                ret_string = ''
+                if f_game['home'] == team:
+                    ret_string = 'v ' + f_game['away']
+                elif f_game['away'] == team:
+                    ret_string = '@ ' + f_game['home']
+                if len(ret_string):
+                    return ret_string + ' | Kickoff: ' + f_game['wday'] + ' ' + f_game['time']
     except TypeError as e:
         # Likely team on bye week, returned NoneType Error
         game = []
@@ -221,14 +232,25 @@ def get_player_opponent_string(team, week, year):
         if game.game_over():
             # Final Score
             ret_string += ' | ' + game.nice_score()
-        elif game.playing():
+        elif game.playing:
             # LIVE
             ret_string += ' | ' + game.nice_score() + ' LIVE'
-        else:
-            # Pre-game
-            ret_string += ' | Kickoff Time:' + game.time
 
     else:
         ret_string = 'Bye Week'
 
     return ret_string
+
+
+def player_in_live(player, game):
+    live_status = 'noposession'
+    all_plays = list(game.drives.plays())
+    if len(all_plays):
+        last_play = all_plays[len(all_plays)-1]
+        if last_play:
+            if last_play.has_player(player.playerid):
+                live_status = "onfield"
+            elif last_play.team == player.team:
+                live_status = "offfield"
+    # Return possibilities "onfield", "offfield", "noposession"
+    return live_status

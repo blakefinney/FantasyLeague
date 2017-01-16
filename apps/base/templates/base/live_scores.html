@@ -12,12 +12,11 @@
 
 <div id="MainGameHolder">
 <div id="TeamNameHolder"><h4 style="width: 50%; display:inline-block">Home - {{ team1score }}</h4><h4 style="width: 50%; display:inline-block; text-align: right;">{{ team2score }} - Away</h4></div>
-
     {% for p in starter_length %}
         <div class="live-score-row">
         {% with positions|key:p as home_player %}
         {% with positions2|key:p as away_player%}
-    <div class="live-score-player{% if home_player.opponent == 'Bye Week' %} bye-week{% endif %}{% if home_player.player_id == 'noplayer' %} empty{% endif %}">
+    <div class="live-score-player {{ home_player.live_status }}{% if home_player.opponent == 'Bye Week' %} bye-week{% endif %}{% if home_player.player_id == 'noplayer' %} empty{% endif %}{% if home_player.injury_status == 'Out' %} inactive{% endif %}{% if home_player.status == 'RES' %} injured-reserve{% endif %}">
         <div class="live-score-player-image-holder" style="float: left; background-image: url('{% if home_player.player_id != 'noplayer' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ home_player.player_team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;">
             <img src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{% if home_player.esb_id %}{{ home_player.esb_id }}{% else %}{{ home_player.player_team }}{% endif %}.png"/>
         </div>
@@ -27,10 +26,11 @@
         </div>
         <div class="live-score-info-holder">
             <div style="width: 100%; display: inline-block;">{{ home_player.player_name }}</div>
-            <div style="font-size: 0.7em; color: #777;">{{ home_player.opponent }}</div>
+            <div class="player_status">{% if home_player.status == 'RES' %}Injured Reserve {% else %}{{ home_player.injury_status }}{% endif %}</div>
+            <div {% if 'LIVE' in home_player.opponent %} class="opponent-string-live" {% endif %}style="font-size: 0.7em; color: #777;">{{ home_player.opponent }}</div>
         </div>
     </div>
-    <div class="live-score-player{% if away_player.opponent == 'Bye Week' %} bye-week{% endif %}" style="text-align: right;">
+    <div class="live-score-player {{ away_player.live_status }}{% if away_player.opponent == 'Bye Week' %} bye-week{% endif %}{% if away_player.player_id == 'noplayer' %} empty{% endif %}{% if away_player.injury_status == 'Out' %} inactive{% endif %}{% if away_player.status == 'RES' %} injured-reserve{% endif %}" style="text-align: right;">
         <div class="live-score-player-score">
             {{ away_player.score }}
             <div class="live-score-summary">{% for s in away_player.score_summary %}<div>{{ s }}</div>{% endfor %}</div>
@@ -40,7 +40,8 @@
         </div>
         <div class="live-score-info-holder">
             <div style="width: 100%; display: inline-block;">{{ away_player.player_name }}</div>
-            <div style="font-size: 0.7em; color: #777;">{{ away_player.opponent }}</div>
+            <div class="player_status">{% if away_player.status == 'RES' %}Injured Reserve {% else %}{{ away_player.injury_status }}{% endif %}</div>
+            <div {% if 'LIVE' in away_player.opponent %} class="opponent-string-live" {% endif %}style="font-size: 0.7em; color: #777;">{{ away_player.opponent }}</div>
         </div>
   </div>
         {% endwith %}
@@ -48,6 +49,41 @@
         </div>
     {% endfor %}
 <hr style="border-top: 1px solid #000;">
-<div>Bench Here</div>
+{% for p in bench_length %}
+        <div class="live-score-row">
+        {% with bench|key:p as home_player %}
+        {% with bench2|key:p as away_player%}
+    <div class="live-score-player {{ home_player.live_status }}{% if home_player.opponent == 'Bye Week' %} bye-week{% endif %}{% if home_player.player_id == 'noplayer' %} empty{% endif %}{% if home_player.injury_status == 'Out' %} inactive{% endif %}{% if home_player.status == 'RES' %} injured-reserve{% endif %}">
+        <div class="live-score-player-image-holder" style="float: left; background-image: url('{% if home_player.player_id != 'noplayer' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ home_player.player_team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;">
+            <img src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{% if home_player.esb_id %}{{ home_player.esb_id }}{% else %}{{ home_player.player_team }}{% endif %}.png"/>
+        </div>
+        <div class="live-score-player-score">
+            {{ home_player.score }}
+            <div class="live-score-summary">{% for s in home_player.score_summary %}<div>{{ s }}</div>{% endfor %}</div>
+        </div>
+        <div class="live-score-info-holder">
+            <div style="width: 100%; display: inline-block;">{{ home_player.player_name }}</div>
+            <div class="player_status">{% if home_player.status == 'RES' %}Injured Reserve {% else %}{{ home_player.injury_status }}{% endif %}</div>
+            <div {% if 'LIVE' in home_player.opponent %} class="opponent-string-live" {% endif %}style="font-size: 0.7em; color: #777;">{{ home_player.opponent }}</div>
+        </div>
+    </div>
+    <div class="live-score-player {{ away_player.live_status }}{% if away_player.opponent == 'Bye Week' %} bye-week{% endif %}{% if away_player.player_id == 'noplayer' %} empty{% endif %}{% if away_player.injury_status == 'Out' %} inactive{% endif %}{% if away_player.status == 'RES' %} injured-reserve{% endif %}" style="text-align: right;">
+        <div class="live-score-player-score">
+            {{ away_player.score }}
+            <div class="live-score-summary">{% for s in away_player.score_summary %}<div>{{ s }}</div>{% endfor %}</div>
+        </div>
+        <div class="live-score-player-image-holder" style="float: right; background-image: url('{% if away_player.player_id != 'noplayer' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ away_player.player_team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;">
+            <img src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{% if away_player.esb_id %}{{ away_player.esb_id }}{% else %}{{ away_player.player_team }}{% endif %}.png"/>
+        </div>
+        <div class="live-score-info-holder">
+            <div style="width: 100%; display: inline-block;">{{ away_player.player_name }}</div>
+            <div class="player_status">{% if away_player.status == 'RES' %}Injured Reserve {% else %}{{ away_player.injury_status }}{% endif %}</div>
+            <div {% if 'LIVE' in away_player.opponent %} class="opponent-string-live" {% endif %}style="font-size: 0.7em; color: #777;">{{ away_player.opponent }}</div>
+        </div>
+  </div>
+        {% endwith %}
+        {% endwith %}
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

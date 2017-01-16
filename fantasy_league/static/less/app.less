@@ -153,6 +153,18 @@ body {
     vertical-align: top;
 }
 .live-score-player.bye-week, .live-score-player.empty {
+    background-color: #999;
+}
+.live-score-player.inactive, .live-score-player.injured-reserve {
+    background-color: #FAA;
+}
+.live-score-player.onfield {
+    background-color: #AFA;
+}
+.live-score-player.offfield {
+    background-color: #FFA;
+}
+.live-score-player.noposession {
     background-color: #DDE;
 }
 .live-score-player-image-holder {
@@ -165,11 +177,19 @@ body {
     width: 100%;
     display: inline-block;
 }
+.live-score-info-holder .opponent-string-live {
+    border-radius: 8px;
+    background-color: #FC6;
+}
 .live-score-player-score {
     display: inline-block;
     font-size: 1.6em;
     width: 55%;
     padding: 0px 4px;
+}
+.live-score-player .player_status {
+    color: #F00;
+    font-size: 0.9em;
 }
 .live-score-summary {
     font-size: 0.4em;
