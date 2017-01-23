@@ -27,6 +27,11 @@ def commish_update_players(request):
                 # Check if player is currently in the FantasyLeague Database
                 try:
                     fl_player = Player.objects.get(ng_id=p)
+                    # Add ESB
+                    ng_player = nflgame.players.get(fl_player.ng_id)
+                    if hasattr(ng_player, 'esb_id'):
+                        fl_player.esb_id = ng_player.esb_id
+                        fl_player.save()
                     found = True
                 except ObjectDoesNotExist:
                     found = False
