@@ -2,16 +2,18 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from apps.base.constants import TEAM_CONST, POSITIONS
 from apps.base.helpers import *
-from apps.base.models import Team, Schedule, Matchup
+from apps.base.models import Team, Schedule, Matchup, Roster
 import nflgame
 try:
     import nfldb
 except ImportError:
     nfldb = None
     pass
+
 
 @login_required(login_url='/login/')
 def team_home(request, team_id=None):
@@ -25,7 +27,7 @@ def team_home(request, team_id=None):
     starters = {}
 
     # Test Team
-    team = display_team.get_roster()
+    team = Roster.objects.get(pk=display_team.id).get_roster()
 
     if nfldb:
         db = nfldb.connect()
@@ -141,6 +143,10 @@ def live_scores(request):
         find_week = current_week
     find_kind = "REG"  # Should always be "REG" except testing
 
+    matchup_index = None
+    if 'matchupIndex' in request.GET:
+        matchup_index = int(request.GET['matchupIndex'])
+
     # Execute any week/year testing here before it fetches any other data:
     #find_week = 1
 
@@ -155,11 +161,16 @@ def live_scores(request):
         team_1 = Team.objects.get(team_id="Team-1")
 
     week_matchups = Matchup.objects.filter(week_number=find_week)
-    matchup = week_matchups.filter(Q(home_team=team_1.pk) | Q(home_team=team_1.pk))
+    if matchup_index:
+        matchup = week_matchups[matchup_index]
+        team_1 = matchup.home_team
+        matchup = [matchup]
+    else:
+        matchup = week_matchups.filter(Q(home_team=team_1.pk) | Q(away_team=team_1.pk))
     # For possible ye Week
     team_2 = None
     if len(matchup):
-        matchup = matchup.first()
+        matchup = matchup[0]
         if matchup.home_team_id == team_1.pk:
             team_2 = matchup.away_team
         elif matchup.away_team_id == team_1.pk:

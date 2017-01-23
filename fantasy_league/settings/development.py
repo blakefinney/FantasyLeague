@@ -28,6 +28,8 @@ CACHES = {
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Current Season
 CURRENT_SEASON = 2016
+# Max Roster Size
+MAX_ROSTER_SIZE = 20
 # Types
 PASSING = "passing"
 RUSHING = 'rushing'

@@ -91,7 +91,7 @@ body {
     text-align: center;
 }
 
-#PlayerTable, #PlayerTable tbdoy tr, #PlayerTable td {
+#PlayerTable, #PlayerTable tbody tr, #PlayerTable td {
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }

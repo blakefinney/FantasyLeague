@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="FunctionHolder">
+    <h2>End Gameweek</h2>
+    <form action="/commish/end-gameweek/" method="post">
+    {% csrf_token %}
+        <label>Select a Gameweek to manually end:</label><input required class="form-control input-sm" title="Gameweek" type="text" name="gameweek"><br>
+        <input class="btn btn-primary" type="submit" value="End Gameweek">
+    </form>
+</div>
+{% endblock %}

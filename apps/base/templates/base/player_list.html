@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <table class="table table-striped">
+        <thead><tr><th></th><th>Player</th><th>Points</th></tr></thead>
+        <tbody>
+        {% for player in player_list %}
+        <tr>
+            <td class="plist-add"><a href="/players/?add_player={{ player.ng_id }}"><button type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i></button></a></td>
+            <td class="plist-player"><img class="plist-pteam" src="http://i.nflcdn.com/static/site/7.4/img/logos/teams-gloss-81x54/{{ player.team|lower }}.png"><div class="plist-pinfo"><div class="plist-pname">{{ player.name }}</div><div class="plist-ppos">{{ player.position }} - {{ player.team }}</div></div></td>
+            <td>0.00</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="FunctionHolder">
+    <h2>Update players</h2>
+    <form action="/commish/update-players/" method="post">
+    {% csrf_token %}
+        <input class="btn btn-primary" type="submit" value="Update Players">
+    </form>
+</div>
+{% endblock %}

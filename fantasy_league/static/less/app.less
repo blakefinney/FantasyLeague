@@ -138,7 +138,7 @@ body {
 
 /* Live Scores Page */
 .live-score-row {
-    background-color: #CCC;
+    background-color: #999;
     border-radius: 20px;
     border-color: #111;
     border-style: double;
@@ -153,7 +153,7 @@ body {
     vertical-align: top;
 }
 .live-score-player.bye-week, .live-score-player.empty {
-    background-color: #999;
+    background-color: #DDD;
 }
 .live-score-player.inactive, .live-score-player.injured-reserve {
     background-color: #FAA;
@@ -197,15 +197,21 @@ body {
 #WeeksGamesHolder {
     overflow-x: scroll;
     margin: 10px -20px;
-    height: 12%;
+    height: 15%;
     white-space: nowrap;
     padding: 5px;
-    background: linear-gradient(#f5f5f5,#fff,#f5f5f5);
+    background: linear-gradient(#f5f5f5,#999999,#f5f5f5);
+}
+a {
+  text-decoration: none;
+  color: inherit;
 }
 .week_matchup {
+    text-decoration: none;
     display: inline-block;
     height: 100%;
-    background-color: #999;
+    background-color: #FFF;
+    border-style: groove;
     border-radius: 15px;
     width: 40%;
     margin: 0px 8px;
@@ -254,5 +260,37 @@ body {
     }
     .live-score-player-image-holder {
         width: 16%;
+    }
+}
+/* Player List Styles */
+.plist-add {
+    width:20px;
+}
+.plist-player {
+
+}
+.plist-pteam {
+    width: 28%;
+    float:left;
+}
+.plist-pinfo {
+    display: inline-block;
+    width: 72%;
+    font-size: 0.78em;
+}
+.plist-pname {
+    display: inline-block;
+    width: 100%;
+    vertical-align: middle;
+    padding-left: 5px;
+}
+.plist-ppos {
+    display: inline-block;
+    width: 100%;
+    padding-left: 5px;
+}
+@media (max-width: 767px) {
+    .stat-col {
+        display: none;
     }
 }
