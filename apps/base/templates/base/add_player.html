@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>Add Player</h3>
-    <form action="/add-player/" method="post">
+    <h3>{{ transaction_type }} Player</h3>
+    <form action="/transaction-player/" method="post">
     {% csrf_token %}
-    <input type="hidden" name="player_id" value="{{ player.playerid }}">
+    <input type="hidden" name="player_id" value="{{ player.ng_id }}">
+    <input type="hidden" name="transaction_type" value="{{ transaction_type }}">
     <div style="width: 55%; display: inline-block;"><h4>{{ player.name }}</h4></div>
     <div style="width: 40%; display: inline-block; background-image: url('{% if player.team != 'UNK' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ player.team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;"><img style="width: 100%" src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{% if player.esb_id %}{{ player.esb_id }}{% else %}{{ player.team }}{% endif %}.png"></div>
-    <div style="width: 100%; margin-top: 10px;"><button type="submit" class="btn btn-primary" style="width:100%;">Add Player</button></div>
+    <div style="width: 100%; margin-top: 10px;"><button type="submit" class="btn btn-{{ btn_type }}" style="width:100%;">{{ transaction_type }} Player</button></div>
     </form>
 {% endblock %}

@@ -20,9 +20,18 @@ def get_fg_lengths(game, player):
     return fgs
 
 
-def calculate_week_score(player_stats, fgs):
+def calculate_week_score(game, player_stats, fgs):
     score = 0
     text_array = []
+    plays = nflgame.combine_plays([game])
+    # Check for 2 point conversion
+    two_point = 0
+    for d in game.drives:
+        if d.result == 'Touchdown':
+            for p in d.plays:
+                if p.passing_twopta or p.rushing_twopta:
+                    if p.has_player(player_stats.player.playerid):
+                        two_point += 1
     if player_stats:
         # Passing Scoring
         if player_stats.passing_yds:
@@ -35,6 +44,20 @@ def calculate_week_score(player_stats, fgs):
         if player_stats.passing_tds:
             score += player_stats.passing_tds*settings.SCORING_SYSTEM['passing']['touchdowns']
             text_array.append(str(player_stats.passing_tds) + " Pass TDs")
+            # Passing TDs present, check for long TD bonus
+            passing_tds = plays.filter(passing_tds=True, team=player_stats.team)
+            long_tds = {"50TD": 0, "40TD": 0}
+            for pass_td in passing_tds:
+                if pass_td.passing_yds > 50:
+                    long_tds['50TD'] += 1
+                elif pass_td.passing_yds > 40:
+                    long_tds['40TD'] += 1
+            if long_tds['50TD'] > 0:
+                score += long_tds['50TD'] * settings.SCORING_SYSTEM['passing']['50TD']
+                text_array.append(str(long_tds['50TD']) + " 50+ Pass TDs")
+            if long_tds['40TD'] > 0:
+                score += long_tds['40TD'] * settings.SCORING_SYSTEM['passing']['40TD']
+                text_array.append(str(long_tds['40TD']) + " 40-49 Pass TDs")
         if player_stats.passing_ints:
             score += player_stats.passing_ints*settings.SCORING_SYSTEM['passing']['interceptions']
             text_array.append(str(player_stats.passing_ints) + " INTs")
@@ -50,6 +73,23 @@ def calculate_week_score(player_stats, fgs):
         if player_stats.rushing_tds:
             score += player_stats.rushing_tds*settings.SCORING_SYSTEM['rushing']['touchdowns']
             text_array.append(str(player_stats.rushing_tds) + " Rush TDs")
+            # Rushing TDs present, check for long TD bonus
+            rushing_tds = plays.filter(rushing_tds=True, team=player_stats.team)
+            long_tds = {"50TD": 0, "40TD": 0}
+            for pass_td in rushing_tds:
+                if pass_td.rushing_yds > 50:
+                    long_tds['50TD'] += 1
+                elif pass_td.rushing_yds > 40:
+                    long_tds['40TD'] += 1
+            if long_tds['50TD'] > 0:
+                score += long_tds['50TD'] * settings.SCORING_SYSTEM['rushing']['50TD']
+                text_array.append(str(long_tds['50TD']) + " 50+ Rush TDs")
+            if long_tds['40TD'] > 0:
+                score += long_tds['40TD'] * settings.SCORING_SYSTEM['rushing']['40TD']
+                text_array.append(str(long_tds['40TD']) + " 40-49 Rush TDs")
+        if player_stats.fumbles_lost:
+            score += player_stats.fumbles_lost * settings.SCORING_SYSTEM['rushing']['fumbles']
+            text_array.append(str(player_stats.fumbles_lost) + " Fumbles")
 
         # Receiving Scoring
         if player_stats.receiving_rec:
@@ -65,6 +105,25 @@ def calculate_week_score(player_stats, fgs):
         if player_stats.receiving_tds:
             score += player_stats.receiving_tds * settings.SCORING_SYSTEM['receiving']['touchdowns']
             text_array.append(str(player_stats.receiving_tds) + " Rec TDs")
+            # Receiving TDs present, check for long TD bonus
+            receiving_tds = plays.filter(receiving_tds=True, team=player_stats.team)
+            long_tds = {"50TD": 0, "40TD": 0}
+            for pass_td in receiving_tds:
+                if pass_td.receiving_yds > 50:
+                    long_tds['50TD'] += 1
+                elif pass_td.receiving_yds > 40:
+                    long_tds['40TD'] += 1
+            if long_tds['50TD'] > 0:
+                score += long_tds['50TD'] * settings.SCORING_SYSTEM['receiving']['50TD']
+                text_array.append(str(long_tds['50TD']) + " 50+ Rec TDs")
+            if long_tds['40TD'] > 0:
+                score += long_tds['40TD'] * settings.SCORING_SYSTEM['receiving']['40TD']
+                text_array.append(str(long_tds['40TD']) + " 40-49 Rec TDs")
+
+        # Two Point Conversion
+        if two_point:
+            score += two_point * settings.SCORING_SYSTEM['misc']['2PT']
+            text_array.append(str(two_point) + " 2PT")
 
         # Kicking Stats
         if player_stats.kicking_xpmade:

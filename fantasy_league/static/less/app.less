@@ -90,7 +90,7 @@ body {
     text-align: center;
 }
 
-#PlayerTable, #PlayerTable tbdoy tr, #PlayerTable td {
+#PlayerTable, #PlayerTable td {
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
@@ -104,6 +104,9 @@ body {
 }
 #PlayerTable tr.filled {
     background-color: #FFF;
+}
+#PlayerTable tr.empty {
+    background-color: #BBB;
 }
 
 #PlayerTable td.team-position {
@@ -123,7 +126,7 @@ body {
     background-color: #DDD;
 }
 
-#PlayerTable .drag-player {
+#PlayerTable .player {
     padding:10px;
 }
 
@@ -293,4 +296,218 @@ a {
     .stat-col {
         display: none;
     }
+}
+ /* Custom Team Colours */
+.PlayerInfoHolder {
+    position: fixed;
+    width: 100%;
+    margin: -20px -20px 0px -20px;
+    height: 25%;
+}
+.PlayerInfoHeader {
+  height: 90%;
+  width: 100%;
+  padding: 5px 15px;
+}
+.PlayerInfoDivider {
+    height: 20%;
+    width: 100%;
+}
+// Teams with darker background colours
+.PlayerInfoHeader.BAL, .PlayerInfoHeader.BUF, .PlayerInfoHeader.CAR, .PlayerInfoHeader.CHI, .PlayerInfoHeader.HOU, .PlayerInfoHeader.MIN, .PlayerInfoHeader.NE,
+.PlayerInfoHeader.NO, .PlayerInfoHeader.NYG, .PlayerInfoHeader.OAK, .PlayerInfoHeader.PIT, .PlayerInfoHeader.SD, .PlayerInfoHeader.SEA, .PlayerInfoHeader.WAS {
+  color: #eee;
+}
+.PlayerInfoHeader.ARI {
+  background-color: #ff0000;
+}
+.PlayerInfoHeader.ATL {
+  background-color: #ff0000;
+}
+.PlayerInfoHeader.BAL {
+  background-color: #600070;
+}
+.PlayerInfoHeader.BUF {
+  background-color: #3333ff;
+}
+.PlayerInfoHeader.CAR {
+  background-color: #000044;
+}
+.PlayerInfoHeader.CHI {
+  background-color: #000099;
+}
+.PlayerInfoHeader.CIN {
+  background-color: #ff5500;
+}
+.PlayerInfoHeader.CLE {
+  background-color: #aa5533;
+}
+.PlayerInfoHeader.DAL {
+  background-color: #ffffff;
+}
+.PlayerInfoHeader.DEN{
+  background-color: #ff5500;
+}
+.PlayerInfoHeader.DET {
+  background-color: #5599ff;
+}
+.PlayerInfoHeader.GB {
+  background-color: #007700;
+}
+.PlayerInfoHeader.HOU {
+  background-color: #000077;
+}
+.PlayerInfoHeader.IND {
+  background-color: #fafafa;
+}
+.PlayerInfoHeader.JAX, .PlayerInfoHeader.JAC {
+  background-color: #dddd00;
+}
+.PlayerInfoHeader.KC {
+  background-color: #ee0000;
+}
+.PlayerInfoHeader.MIA {
+  background-color: #00ffbb;
+}
+.PlayerInfoHeader.MIN {
+  background-color: #8800aa;
+}
+.PlayerInfoHeader.NE {
+  background-color: #000077;
+}
+.PlayerInfoHeader.NO {
+  background-color: #222222;
+}
+.PlayerInfoHeader.NYG {
+  background-color: #0000aa;
+}
+.PlayerInfoHeader.NYJ {
+  background-color: #119911;
+}
+.PlayerInfoHeader.OAK {
+  background-color: #222222;
+}
+.PlayerInfoHeader.PHI {
+  background-color: #119911;
+}
+.PlayerInfoHeader.PIT {
+  background-color: #222222;
+}
+.PlayerInfoHeader.SD {
+  background-color: #3333cc;
+}
+.PlayerInfoHeader.SF {
+  background-color: #ffcc55;
+}
+.PlayerInfoHeader.SEA {
+  background-color: #000088;
+}
+.PlayerInfoHeader.LA {
+  background-color: #0000dd;
+}
+.PlayerInfoHeader.TB {
+  background-color: #ee1111;
+}
+.PlayerInfoHeader.TEN {
+  background-color: #4499ff;
+}
+.PlayerInfoHeader.WAS {
+  background-color: #800020;
+}
+// Faded Divider
+.PlayerInfoDivider.ARI {
+  background: linear-gradient(rgba(255,0,0,1),rgba(255,0,0,0));
+}
+.PlayerInfoDivider.ATL {
+  background: linear-gradient(rgba(255,0,0,1),rgba(255,0,0,0));
+}
+.PlayerInfoDivider.BAL {
+  background: linear-gradient(rgba(96,0,112,1),rgba(96,0,112,0));
+}
+.PlayerInfoDivider.BUF {
+  background: linear-gradient(rgba(51,51,255,1),rgba(51,51,255,0));
+}
+.PlayerInfoDivider.CAR {
+  background: linear-gradient(rgba(0,0,68,1),rgba(0,0,68,0));
+}
+.PlayerInfoDivider.CHI {
+  background: linear-gradient(rgba(0,0,153,1),rgba(0,0,153,0));
+}
+.PlayerInfoDivider.CIN {
+  background: linear-gradient(rgba(255,85,0,1),rgba(255,85,0,0));
+}
+.PlayerInfoDivider.CLE {
+  background: linear-gradient(rgba(170,85,51,1),rgba(170,85,51,0));
+}
+.PlayerInfoDivider.DAL {
+  background: linear-gradient(rgba(255,255,255,1),rgba(255,255,255,0));
+}
+.PlayerInfoDivider.DEN{
+  background: linear-gradient(rgba(255,85,0,1),rgba(255,85,0,0));
+}
+.PlayerInfoDivider.DET {
+  background: linear-gradient(rgba(85,153,255,1),rgba(85,153,255,0));
+}
+.PlayerInfoDivider.GB {
+  background: linear-gradient(rgba(0,119,0,1),rgba(0,119,0,0));
+}
+.PlayerInfoDivider.HOU {
+  background: linear-gradient(rgba(0,0,119,1),rgba(0,0,119,0));
+}
+.PlayerInfoDivider.IND {
+  background: linear-gradient(rgba(250,250,250,1),rgba(250,250,250,0));
+}
+.PlayerInfoDivider.JAX, .PlayerInfoDivider.JAC {
+  background: linear-gradient(rgba(221,221,0,1),rgba(221,221,0,0));
+}
+.PlayerInfoDivider.KC {
+  background: linear-gradient(rgba(238,0,0,1),rgba(238,0,0,0));
+}
+.PlayerInfoDivider.MIA {
+  background: linear-gradient(rgba(0,255,187,1),rgba(0,255,187,0));
+}
+.PlayerInfoDivider.MIN {
+  background: linear-gradient(rgba(136,0,187,1),rgba(136,0,187,0));
+}
+.PlayerInfoDivider.NE {
+  background: linear-gradient(rgba(0,0,119,1),rgba(0,0,119,0));
+}
+.PlayerInfoDivider.NO {
+  background: linear-gradient(rgba(34,34,34,1),rgba(34,34,34,0));
+}
+.PlayerInfoDivider.NYG {
+  background: linear-gradient(rgba(0,0,170,1),rgba(0,0,170,0));
+}
+.PlayerInfoDivider.NYJ {
+  background: linear-gradient(rgba(17,153,17,1),rgba(17,153,17,0));
+}
+.PlayerInfoDivider.OAK {
+  background: linear-gradient(rgba(34,34,34,1),rgba(34,34,34,0));
+}
+.PlayerInfoDivider.PHI {
+  background: linear-gradient(rgba(17,153,17,1),rgba(17,153,17,0));
+}
+.PlayerInfoDivider.PIT {
+  background: linear-gradient(rgba(34,34,34,1),rgba(34,34,34,0));
+}
+.PlayerInfoDivider.SD {
+  background: linear-gradient(rgba(51,51,204,1),rgba(51,51,204,0));
+}
+.PlayerInfoDivider.SF {
+  background: linear-gradient(rgba(255,204,85,1),rgba(255,204,85,0));
+}
+.PlayerInfoDivider.SEA {
+  background: linear-gradient(rgba(0,0,136,1),rgba(0,0,136,0));
+}
+.PlayerInfoDivider.LA {
+  background: linear-gradient(rgba(0,0,221,1),rgba(0,0,221,0));
+}
+.PlayerInfoDivider.TB {
+  background: linear-gradient(rgba(238,17,17,1),rgba(238,17,17,0));
+}
+.PlayerInfoDivider.TEN {
+  background: linear-gradient(rgba(68,153,255,1),rgba(68,153,255,0));
+}
+.PlayerInfoDivider.WAS {
+  background: linear-gradient(rgba(128,0,32,1),rgba(128,0,32,0));
 }

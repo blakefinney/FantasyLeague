@@ -3,11 +3,11 @@
     <table class="table table-striped">
         <thead><tr><th></th><th>Player</th><th>Points</th></tr></thead>
         <tbody>
-        {% for player in player_list %}
+        {% for scorer in player_list %}
         <tr>
-            <td class="plist-add"><a href="/players/?add_player={{ player.ng_id }}"><button type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i></button></a></td>
-            <td class="plist-player"><img class="plist-pteam" src="http://i.nflcdn.com/static/site/7.4/img/logos/teams-gloss-81x54/{{ player.team|lower }}.png"><div class="plist-pinfo"><div class="plist-pname">{{ player.name }}</div><div class="plist-ppos">{{ player.position }} - {{ player.team }}</div></div></td>
-            <td>0.00</td>
+            <td class="plist-add"><a href="/players/?add_player={{ scorer.player.ng_id }}"><button type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i></button></a></td>
+            <td class="plist-player"><a href="/player-info/{{ scorer.player.ng_id }}"><img class="plist-pteam" src="{% if scorer.player.team and scorer.player.team != 'UNK' %}http://i.nflcdn.com/static/site/7.4/img/logos/teams-gloss-81x54/{{ scorer.player.team|lower }}{% else %}http://fantasy.nfl.com/static/img/nflLogo40x27_1389660237{% endif %}.png"><div class="plist-pinfo"><div class="plist-pname">{{ scorer.player.name }}</div><div class="plist-ppos">{{ scorer.player.position }} - {% if scorer.player.team == 'UNK' %}FA{% else %}{{ scorer.player.team }}{% endif %}</div></div></a></td>
+            <td>{{ scorer.total }}</td>
         </tr>
         {% endfor %}
         </tbody>

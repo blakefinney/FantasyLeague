@@ -1,4 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div id="#PlayerInfoPopUp">PopUp</div>
+<div class="PlayerInfoHolder {{ player.team }}">
+    <div class="PlayerInfoHeader {{ player.team }}">
+    <div style="width: 55%; float: left;;"><h4>{{ player.name }}</h4><h5>{% if player.fantasy_team %}{{ player.fantasy_team.team_name }}{% else %}Free Agent{% endif %}</h5>
+        <div {% if player.fantasy_team %}{% ifequal player.fantasy_team.team_owner request.user.username %}class="btn btn-danger"><a href="/players/?drop_player={{ player.ng_id }}">Drop Player{% else %}class="btn btn-primary"><a href="/players/?trade_player={{ player.ng_id }}">Trade Player{% endifequal %}{% else %}class="btn btn-success"><a href="/players/?add_player={{ player.ng_id }}">Add Player{% endif %}</a></div></div>
+    <div style="background-color: rgba(200,200,200,0.8); border: 3px #000 solid; border-radius: 8px; width: 40%; float: right; background-image: url('{% if player.team != 'UNK' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ player.team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;"><img style="width: 100%; border-radius: 8px;" src="http://static.nfl.com/static/content/public/static/img/fantasy/transparent/200x200/{% if player.esb_id %}{{ player.esb_id }}{% else %}{{ player.team }}{% endif %}.png"></div>
+    </div>
+    <div class="PlayerInfoDivider {{ player.team }}"></div>
+</div>
+<div class="PlayerInfoStats {{ player.team }}" style="padding-top: 45%;">
+    <table class="table table-striped" style="font-size:0.8em;">
+        <thead><tr><th>Week</th><th style="width: 67px;">Opp.</th><th>Points</th><th>Summary</th></tr></thead>
+        <tbody>
+            {% for sch in schedule %}
+                <tr><td>{{ forloop.counter }}</td><td>{% if sch.opp %}{{ sch.opp }}{% else %}Bye Week{% endif %}</td><td>{{ sch.score }}</td><td>{% for s in sch.desc %}{{ s }}{% if not forloop.last %}, {% endif %}{% endfor %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

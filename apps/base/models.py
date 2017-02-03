@@ -17,6 +17,12 @@ class RosterManager(models.Manager):
         return roster
 
 
+class FpManager(models.Manager):
+    def create_fp(self, player, year):
+        fp = self.create(player=player, year=year)
+        return fp
+
+
 class PlayerManager(models.Manager):
     def create_player(self, ng_player=None):
         esb_id = ''
@@ -48,6 +54,15 @@ class Team(models.Model):
         success = self.roster.add_to_bench(player)
         return success
 
+    def drop_player(self, player):
+        # Update Player
+        player.status = "Free Agent"
+        player.fantasy_team = None
+        player.save()
+        # Add Player to bench
+        success = self.roster.drop_player(player)
+        return success
+
     pass
 
 
@@ -67,6 +82,76 @@ class Player(models.Model):
             return True
         else:
             return False
+
+    def is_owned_by(self, team):
+        if self.status == 'Owned' and self.fantasy_team == team:
+            return True
+        else:
+            return False
+
+# Roster class
+class FantasyPoints(models.Model):
+    objects = FpManager()
+
+    player = models.ForeignKey(Player, default='')
+    year = models.IntegerField(default=0)
+
+    total = models.FloatField(default=None, null=True)
+
+    week1 = models.FloatField(default=None, null=True)
+    week2 = models.FloatField(default=None, null=True)
+    week3 = models.FloatField(default=None, null=True)
+    week4 = models.FloatField(default=None, null=True)
+    week5 = models.FloatField(default=None, null=True)
+    week6 = models.FloatField(default=None, null=True)
+    week7 = models.FloatField(default=None, null=True)
+    week8 = models.FloatField(default=None, null=True)
+    week9 = models.FloatField(default=None, null=True)
+    week10 = models.FloatField(default=None, null=True)
+    week11 = models.FloatField(default=None, null=True)
+    week12 = models.FloatField(default=None, null=True)
+    week13 = models.FloatField(default=None, null=True)
+    week14 = models.FloatField(default=None, null=True)
+    week15 = models.FloatField(default=None, null=True)
+    week16 = models.FloatField(default=None, null=True)
+    week17 = models.FloatField(default=None, null=True)
+
+    def calc_total(self):
+        self.total = 0
+        if self.week1:
+            self.total += self.week1
+        if self.week2:
+            self.total += self.week2
+        if self.week3:
+            self.total += self.week3
+        if self.week4:
+            self.total += self.week4
+        if self.week5:
+            self.total += self.week5
+        if self.week6:
+            self.total += self.week6
+        if self.week7:
+            self.total += self.week7
+        if self.week8:
+            self.total += self.week8
+        if self.week9:
+            self.total += self.week9
+        if self.week10:
+            self.total += self.week10
+        if self.week11:
+            self.total += self.week11
+        if self.week12:
+            self.total += self.week12
+        if self.week13:
+            self.total += self.week13
+        if self.week14:
+            self.total += self.week14
+        if self.week15:
+            self.total += self.week15
+        if self.week16:
+            self.total += self.week16
+        if self.week17:
+            self.total += self.week17
 
 
 # Roster class
@@ -168,6 +253,52 @@ class Roster(models.Model):
         self.BENCH = b_string
         self.save()
         return True
+
+    def drop_player(self, player):
+        dropped = False
+        if player.ng_id in self.BENCH:
+            self.BENCH = self.BENCH.replace(','+player.ng_id, '')
+            self.BENCH = self.BENCH.replace(player.ng_id+',', '')
+            dropped = True
+        else:
+            if self.QB1 == player:
+                self.QB1 = None
+                dropped = True
+            elif self.QB2 == player:
+                self.QB2 = None
+                dropped = True
+            elif self.RB1 == player:
+                self.RB1 = None
+                dropped = True
+            elif self.RB2 == player:
+                self.RB2 = None
+                dropped = True
+            elif self.WR1 == player:
+                self.WR1 = None
+                dropped = True
+            elif self.WR2 == player:
+                self.WR2 = None
+                dropped = True
+            elif self.TE1 == player:
+                self.TE1 = None
+                dropped = True
+            elif self.FLEX1 == player:
+                self.FLEX1 = None
+                dropped = True
+            elif self.FLEX2 == player:
+                self.FLEX2 = None
+                dropped = True
+            elif self.FLEX3 == player:
+                self.FLEX3 = None
+                dropped = True
+            elif self.K1 == player:
+                self.K1 = None
+                dropped = True
+            elif self.DEF1 == player:
+                self.DEF1 = None
+                dropped = True
+        self.save()
+        return dropped
 
 class Playoffs(models.Model):
     playoff_teams = models.IntegerField(default=2)

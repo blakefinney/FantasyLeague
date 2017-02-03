@@ -34,6 +34,7 @@ MAX_ROSTER_SIZE = 20
 PASSING = "passing"
 RUSHING = 'rushing'
 RECEIVING = 'receiving'
+MISC = 'misc'
 KICKING = 'kicking'
 DEFENCE = 'defence'
 # Offence Stats
@@ -47,6 +48,11 @@ ONEBONUS = '100bonus'
 TWOBONUS = '200bonus'
 THREEBONUS = '300bonus'
 FOURBONUS = '400bonus'
+
+TD_PLUS_50 = '50TD'
+TD_PLUS_40 = '40TD'
+# 2 Point Conversion
+TWO_POINT = '2PT'
 # Kicking
 XP_MADE = 'madeXP'
 XP_MISS = 'missXP'
@@ -79,21 +85,30 @@ SCORING_SYSTEM = {
         TOUCHDOWNS: 5,
         INTERCEPTIONS: -2,
         THREEBONUS: 1,
-        FOURBONUS: 2
+        FOURBONUS: 2,
+        TD_PLUS_50: 2,
+        TD_PLUS_40: 1
     },
     RUSHING: {
         YARDS: 0.1,
         TOUCHDOWNS: 6,
         FUMBLES: -2,
         ONEBONUS: 1,
-        TWOBONUS: 2
+        TWOBONUS: 2,
+        TD_PLUS_50: 2,
+        TD_PLUS_40: 1
     },
     RECEIVING: {
         YARDS: 0.1,
         RECEPTIONS: 1,
         TOUCHDOWNS: 6,
         ONEBONUS: 1,
-        TWOBONUS: 2
+        TWOBONUS: 2,
+        TD_PLUS_50: 2,
+        TD_PLUS_40: 1
+    },
+    MISC: {
+        TWO_POINT: 2
     },
     KICKING: {
         XP_MADE: 1,

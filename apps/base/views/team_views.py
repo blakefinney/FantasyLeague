@@ -1,4 +1,6 @@
 """Views for the team pages"""
+import json
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -6,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from apps.base.constants import TEAM_CONST, POSITIONS
 from apps.base.helpers import *
-from apps.base.models import Team, Schedule, Matchup, Roster
+from apps.base.models import Team, Schedule, Matchup, Roster, Player, FantasyPoints
 import nflgame
 try:
     import nfldb
@@ -21,7 +23,7 @@ def team_home(request, team_id=None):
     template_context = {}
     # Fetch Current Team
     display_team = Team.objects.get(team_id="Team-"+team_id)
-    template_context.update({"team_name": display_team.team_name})
+    template_context.update({"team_name": display_team.team_name, "team_id": team_id})
     positions = []
     bench = []
     starters = {}
@@ -35,10 +37,16 @@ def team_home(request, team_id=None):
     for pos in TEAM_CONST.STARTER_ORDER:
         no_of_pos = TEAM_CONST.STARTING_SPOTS[pos]
         for i in range(0,no_of_pos):
+            total = 0
             if pos == POSITIONS.BENCH:
                 p_id = 'noplayer'
                 if len(team['bench']) > i:
                     p_id = team['bench'][i]
+                    db_player = Player.objects.get(ng_id=p_id)
+                    try:
+                        total = FantasyPoints.objects.get(player=db_player, year=2016).total
+                    except:
+                        do = 'nothing'
                 result = []
                 if nfldb:
                     q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
@@ -55,7 +63,8 @@ def team_home(request, team_id=None):
                         "player_team": stats.player.team,
                         "pass": {"atts": stats.passing_att, "yards": stats.passing_yds, "tds": stats.passing_tds},
                         "rush": {"atts": stats.rushing_att, "yards": stats.rushing_yds, "tds": stats.rushing_tds},
-                        "rec": {"tar":stats.receiving_tar,"recep": stats.receiving_rec, "yards": stats.receiving_yds, "tds": stats.receiving_tds}
+                        "rec": {"tar":stats.receiving_tar,"recep": stats.receiving_rec, "yards": stats.receiving_yds, "tds": stats.receiving_tds},
+                        "points": total
                     })
                 elif not nflgame.players.get(p_id) is None:
                     p = nflgame.players.get(p_id)
@@ -68,16 +77,26 @@ def team_home(request, team_id=None):
                         "player_team": p.team,
                         "pass": {"atts": 0, "yards": 0, "tds": 0},
                         "rush": {"atts": 0, "yards": 0, "tds": 0},
-                        "rec": {"tar": 0, "recep": 0, "yards": 0,"tds": 0}
+                        "rec": {"tar": 0, "recep": 0, "yards": 0,"tds": 0},
+                        "points": total
                     })
                 else:
                     bench.append({
+                        "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                         "position": str(pos),
                         "player_id": "noplayer",
                         "player_name": 'Empty'
                     })
             else:
-                p_id = team['starting'][pos][i]
+                p_id = None
+                player = team['starting'][pos][i]
+                if hasattr(player, 'ng_id'):
+                    p_id = player.ng_id
+                    db_player = Player.objects.get(ng_id=p_id)
+                    try:
+                        total = FantasyPoints.objects.get(player=db_player, year=2016).total
+                    except:
+                        do = 'nothing'
                 result = []
                 if nfldb:
                     q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
@@ -96,7 +115,8 @@ def team_home(request, team_id=None):
                         "player_team": stats.player.team,
                         "pass":{"atts":stats.passing_att,"yards":stats.passing_yds,"tds":stats.passing_tds},
                         "rush":{"atts":stats.rushing_att,"yards": stats.rushing_yds,"tds":stats.rushing_tds},
-                        "rec":{"tar":stats.receiving_tar,"recep":stats.receiving_rec,"yards": stats.receiving_yds,"tds":stats.receiving_tds}
+                        "rec":{"tar":stats.receiving_tar,"recep":stats.receiving_rec,"yards": stats.receiving_yds,"tds":stats.receiving_tds},
+                        "points": total
                     })
                 elif not nflgame.players.get(p_id) is None:
                     p = nflgame.players.get(p_id)
@@ -110,11 +130,13 @@ def team_home(request, team_id=None):
                         "player_team": p.team,
                         "pass": {"atts": 0, "yards": 0, "tds": 0},
                         "rush": {"atts": 0, "yards": 0, "tds": 0},
-                        "rec": {"tar": 0, "recep": 0, "yards": 0, "tds": 0}
+                        "rec": {"tar": 0, "recep": 0, "yards": 0, "tds": 0},
+                        "points": total
                     })
                 else:
                     positions.append({
                         "position": str(pos),
+                        "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                         "player_id": "noplayer",
                         "player_name": 'Empty'
                     })
@@ -126,10 +148,20 @@ def team_home(request, team_id=None):
                             bench=bench,
                             starters=starters,
                             flex_pos=["RB","WR","TE"],
-                            starter_order=TEAM_CONST.STARTER_ORDER)
+                            starter_order=TEAM_CONST.STARTER_ORDER,
+                            starters_json=json.dumps(positions),
+                            bench_json=json.dumps(bench))
 
     return render(request, 'base/team_home.html', context=template_context)
 
+
+@login_required(login_url='/login/')
+def save_team(request, team_id=None):
+    if request.method == 'POST':
+        starter_array = request.POST['starters'].split(',')
+        bench_array = request.POST['bench'].split(',')
+    else:
+        return HttpResponseRedirect('/team/1/')
 
 @login_required(login_url='/login/')
 def live_scores(request):
@@ -205,13 +237,25 @@ def live_scores(request):
             if pos == 'BEN':
                 if 'bench' in team and len(team['bench']) > i:
                     pid = team['bench'][i] or 'noplayer'
+                    if pid != 'noplayer':
+                        player = Player.objects.get(ng_id=pid)
                 if 'bench' in team2 and len(team2['bench']) > i:
                     pid2 = team2['bench'][i] or 'noplayer'
+                    if pid2 != 'noplayer':
+                        player2 = Player.objects.get(ng_id=pid2)
             else:
                 if 'starting' in team:
-                    pid = team['starting'][pos][i] or 'noplayer'
+                    player = team['starting'][pos][i]
+                    if player:
+                        pid = team['starting'][pos][i].ng_id
+                    else:
+                        pid = 'noplayer'
                 if 'starting' in team2:
-                    pid2 = team2['starting'][pos][i] or 'noplayer'
+                    player2 = team2['starting'][pos][i]
+                    if player2:
+                        pid2 = team2['starting'][pos][i].ng_id
+                    else:
+                        pid2 = 'noplayer'
             found = False
             found2 = False
             if pos != 'DEF':
@@ -225,10 +269,12 @@ def live_scores(request):
                         fgs = []
                         if player_in_game.kicking_fga:
                             fgs = get_fg_lengths(game, player_in_game)
-                        score, score_summary = calculate_week_score(player_in_game, fgs)
+                        score, score_summary = calculate_week_score(game, player_in_game, fgs)
                         esb_id = ''
                         if hasattr(player_details, 'esb_id'):
                             esb_id = player_details.esb_id
+                        elif hasattr(player, 'esb_id'):
+                            esb_id = player.esb_id
                         injury_status = ''
                         if hasattr(player_details, 'injury_status'):
                             injury_status = player_details.injury_status
@@ -261,10 +307,12 @@ def live_scores(request):
                         fgs2 = []
                         if player2_in_game.kicking_fga:
                             fgs2 = get_fg_lengths(game, player2_in_game)
-                        score2, score2_summary = calculate_week_score(player2_in_game, fgs2)
+                        score2, score2_summary = calculate_week_score(game, player2_in_game, fgs2)
                         esb_id2 = ''
-                        if hasattr(player_details, 'esb_id'):
+                        if hasattr(player_details2, 'esb_id'):
                             esb_id2 = player_details2.esb_id
+                        elif hasattr(player2, 'esb_id'):
+                            esb_id2 = player2.esb_id
                         injury_status2 = ''
                         if hasattr(player_details2, 'injury_status'):
                             injury_status2 = player_details2.injury_status
@@ -343,6 +391,8 @@ def live_scores(request):
                         esb_id = ''
                         if hasattr(player_details, 'esb_id'):
                             esb_id = player_details.esb_id
+                        elif hasattr(player, 'esb_id'):
+                            esb_id = player.esb_id
                         bench.append({
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
@@ -371,6 +421,8 @@ def live_scores(request):
                         esb_id = ''
                         if hasattr(player_details, 'esb_id'):
                             esb_id = player_details.esb_id
+                        elif hasattr(player, 'esb_id'):
+                            esb_id = player.esb_id
                         positions.append({
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
@@ -400,6 +452,8 @@ def live_scores(request):
                         esb_id2 = ''
                         if hasattr(player_details2,'esb_id'):
                             esb_id2 = player_details2.esb_id
+                        elif hasattr(player2,'esb_id'):
+                            esb_id2 = player2.esb_id
                         bench2.append({
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
@@ -428,6 +482,8 @@ def live_scores(request):
                         esb_id2 = ''
                         if hasattr(player_details2,'esb_id'):
                             esb_id2 = player_details2.esb_id
+                        elif hasattr(player2,'esb_id'):
+                            esb_id2 = player2.esb_id
                         positions2.append({
                             "position": str(pos),
                             "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
