@@ -178,10 +178,10 @@ jQuery(function() {
     var bench_csv = '';
     for (var j = 0; j < window.fl_bench.length; j++){
       if (window.fl_bench[j]) {
-        bench_csv += window.fl_bench[j].player_id;
-        if (i !== (window.fl_bench.length - 1)) {
+        if (bench_csv.length) {
           bench_csv += ','
         }
+        bench_csv += window.fl_bench[j].player_id;
       }
     }
     var req = jQuery.post('/save-team/'+jQuery('#team-id-hidden').data('teamid')+'/',{

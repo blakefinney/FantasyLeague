@@ -197,20 +197,29 @@ class Roster(models.Model):
                 "bench": self.BENCH.split(',')
             }
 
-    def set_roster(self, lineup_object):
-        do = 'nothing'
-        #self.QB1 = lineup_array[0] or 'noplayer'
-        #self.QB2 = lineup_array[1] or 'noplayer'
-        #self.RB1 = lineup_array[2] or 'noplayer'
-        #self.RB2 = lineup_array[3] or 'noplayer'
-        #self.WR1 = lineup_array[4] or 'noplayer'
-        #self.WR2 = lineup_array[5] or 'noplayer'
-        #self.TE1 = lineup_array[6] or 'noplayer'
-        #self.FLEX1 = lineup_array[7] or 'noplayer'
-        #self.FLEX2 = lineup_array[8] or 'noplayer'
-        #self.FLEX3 = lineup_array[9] or 'noplayer'
-        #self.K1 = lineup_array[10] or 'noplayer'
-        #self.DEF1 = lineup_array[11] or 'noplayer'
+    def set_lineup(self, st, bench_array):
+        def check_player(string):
+            if string == 'noplayer':
+                return None
+            else:
+                return Player.objects.get(ng_id=string)
+
+        self.QB1 = check_player(st[0])
+        self.QB2 = check_player(st[1])
+        self.RB1 = check_player(st[2])
+        self.RB2 = check_player(st[3])
+        self.WR1 = check_player(st[4])
+        self.WR2 = check_player(st[5])
+        self.TE1 = check_player(st[6])
+        self.FLEX1 = check_player(st[7])
+        self.FLEX2 = check_player(st[8])
+        self.FLEX3 = check_player(st[9])
+        self.K1 = check_player(st[10])
+        self.DEF = check_player(st[11])
+
+        self.BENCH = bench_array
+
+        self.save()
 
     def get_roster_size(self):
         players = 0

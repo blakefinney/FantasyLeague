@@ -21,8 +21,10 @@ except ImportError:
 def team_home(request, team_id=None):
     """ Story View """
     template_context = {}
+    if not team_id:
+        team_id = Team.objects.get(team_owner=request.user.username).id
     # Fetch Current Team
-    display_team = Team.objects.get(team_id="Team-"+team_id)
+    display_team = Team.objects.get(team_id="Team-"+str(team_id))
     template_context.update({"team_name": display_team.team_name, "team_id": team_id})
     positions = []
     bench = []
@@ -42,7 +44,10 @@ def team_home(request, team_id=None):
                 p_id = 'noplayer'
                 if len(team['bench']) > i:
                     p_id = team['bench'][i]
-                    db_player = Player.objects.get(ng_id=p_id)
+                    try:
+                        db_player = Player.objects.get(ng_id=p_id)
+                    except:
+                        do = 'nothing'
                     try:
                         total = FantasyPoints.objects.get(player=db_player, year=2016).total
                     except:
@@ -149,8 +154,8 @@ def team_home(request, team_id=None):
                             starters=starters,
                             flex_pos=["RB","WR","TE"],
                             starter_order=TEAM_CONST.STARTER_ORDER,
-                            starters_json=json.dumps(positions),
-                            bench_json=json.dumps(bench))
+                            starters_json=json.dumps(positions).replace("'",""),
+                            bench_json=json.dumps(bench).replace("'",""))
 
     return render(request, 'base/team_home.html', context=template_context)
 
@@ -159,7 +164,8 @@ def team_home(request, team_id=None):
 def save_team(request, team_id=None):
     if request.method == 'POST':
         starter_array = request.POST['starters'].split(',')
-        bench_array = request.POST['bench'].split(',')
+        team = Team.objects.get(team_id='Team-'+team_id)
+        team.roster.set_lineup(starter_array, request.POST['bench'])
     else:
         return HttpResponseRedirect('/team/1/')
 

@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^logout/$',logout_form, name='logout'),
     url(r'^register/$',register_form, name='register'),
     url(r'^story/(?P<story_id>\w+)/$', story, name='story'),
+    url(r'^my-team/$', team_home, name='team'),
     url(r'^team/(?P<team_id>\w+)/$', team_home, name='team'),
     url(r'^save-team/(?P<team_id>\w+)/$', save_team, name='save-team'),
     url(r'^players/$', player_list, name='players'),
