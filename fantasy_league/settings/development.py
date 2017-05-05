@@ -108,7 +108,8 @@ SCORING_SYSTEM = {
         TD_PLUS_40: 1
     },
     MISC: {
-        TWO_POINT: 2
+        TWO_POINT: 2,
+        TOUCHDOWNS: 6
     },
     KICKING: {
         XP_MADE: 1,

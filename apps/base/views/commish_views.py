@@ -68,13 +68,24 @@ def commish_update_fantasy_points(request):
             games = nflgame.games(year, week=g, kind='REG')
             for game in games:
                 for fp in fp_array:
-                    player_in_game = game.players.playerid(fp.player.ng_id)
-                    if player_in_game:
-                        # Player played in this game
-                        score, d = calculate_week_score(game, player_in_game, [])
-                        setattr(fp, 'week'+str(g), score)
-                        fp.calc_total()
-                        fp.save()
+                    if "DEF-" in fp.player.ng_id:
+                        defc = fp.player.ng_id.split('-')[1]
+                        if game.away == defc or game.home == defc:
+                            score, d = calculate_def_score(defc, [game])
+                            setattr(fp, 'week' + str(g), score)
+                            fp.calc_total()
+                            fp.save()
+                    else:
+                        player_in_game = game.players.playerid(fp.player.ng_id)
+                        if player_in_game:
+                            # Player played in this game
+                            fgs = []
+                            if player_in_game.kicking_fga:
+                                fgs = get_fg_lengths(game, player_in_game)
+                            score, d = calculate_week_score(game, player_in_game, fgs)
+                            setattr(fp, 'week'+str(g), score)
+                            fp.calc_total()
+                            fp.save()
 
     return render(request, 'base/commish_update_fantasy_points.html', context=template_context)
 

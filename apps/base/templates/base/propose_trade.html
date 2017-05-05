@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block js %}
+<script type="text/javascript">
+window.user_team = JSON.parse('{% autoescape off %}{{ user_json }}{% endautoescape %}');
+window.prop_team = JSON.parse('{% autoescape off %}{{ prop_json }}{% endautoescape %}');
+</script>
+<script type="text/javascript" async src="{% static 'js/trade_proposal.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <h3>{{ team_name }}</h3>
+    <div class="select_holder">
+    <select id="UserSelect" class="selectpicker" title="Select a Player to Trade Away">{% for player in roster %}<option style="background-image: url('{% if player.team != 'UNK' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ player.team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;">{{ player.name }}</option>{% endfor %}</select>
+    <div id="UserPlayerHolder"></div>
+    </div>
+    <h3>Other Team</h3>
+    <div class="select_holder">
+    <select id="PropSelect" class="selectpicker" title="Select a Player to Trade For">{% for player2 in prop_roster %}<option style="background-image: url('{% if player2.team != 'UNK' %}http://s.nflcdn.com/static/content/public/static/img/fantasy/player-card/headshot-logo-bg/{{ player2.team }}.png{% else %}http://fantasy.nfl.com/static/img/nflLogo200x213_1389660237.png{% endif %}'); background-size: cover; background-position: center;">{{ player2.name }}</option>{% endfor %}</select>
+    <div id="PropPlayerHolder">
+    </div>
+    </div>
+{% endblock %}

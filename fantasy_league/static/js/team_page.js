@@ -93,7 +93,7 @@ jQuery(function() {
   jQuery('.selectpicker').on('changed.bs.select', function () {
     // Change the visual lineup
     var p_index = jQuery(this).parent().parent().find('.position_index').data('index');
-    var s_index = jQuery(this).val();
+    var s_index = Number(jQuery(this).val());
     if(s_index > -1 && p_index < 12){
       // Starter -> Starter Swap
       var swap = window.fl_starter[s_index];
@@ -126,6 +126,31 @@ jQuery(function() {
 
       window.fl_starter[jQuery(this).val()] = orig;
       window.fl_bench[p_index-12] = swap;
+    } else if (s_index === -1) {
+      // Starter - > Bench
+      var orig = window.fl_starter[p_index], swap;
+      for (var z = 0; z < window.fl_bench.length; z++){
+        if (!swap && window.fl_bench[z].player_id === 'noplayer'){
+          s_index = z + 12;
+          swap = window.fl_bench[z];
+        }
+      }
+      if(!swap){
+        swap = {player_id: "noplayer", player_name: "Empty", position: "BEN", position_accepts: ["QB","RB","WR","TE","K","DEF"]};
+        s_index = z + 13;
+      }
+      // Processing
+      var temp = swap.position;
+      var temp2 = swap.position_accepts;
+
+      swap.position_accepts = orig.position_accepts;
+      swap.position = orig.position;
+
+      orig.position_accepts = temp2;
+      orig.position = temp;
+
+      window.fl_bench[s_index-12] = orig;
+      window.fl_starter[p_index] = swap;
     }
     // Sort out filled/empty classes
     var tr_1 = jQuery(jQuery('tr.starting, tr.bench')[p_index]);
@@ -177,7 +202,7 @@ jQuery(function() {
     }
     var bench_csv = '';
     for (var j = 0; j < window.fl_bench.length; j++){
-      if (window.fl_bench[j]) {
+      if (window.fl_bench[j] && window.fl_bench[j].player_id !== 'noplayer') {
         if (bench_csv.length) {
           bench_csv += ','
         }

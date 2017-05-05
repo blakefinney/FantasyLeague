@@ -3,7 +3,7 @@
 from django.conf.urls import url
 
 from .views.team_views import team_home, save_team, live_scores
-from .views.player_views import player_info, player_list, transaction_player
+from .views.player_views import player_info, player_list, transaction_player, propose_trade
 from .views.base_views import home, login_form, logout_form, register_form, story
 from .views.commish_views import commish_home, commish_update_players, commish_end_gameweek, \
     commish_update_fantasy_points
@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^team/(?P<team_id>\w+)/$', team_home, name='team'),
     url(r'^save-team/(?P<team_id>\w+)/$', save_team, name='save-team'),
     url(r'^players/$', player_list, name='players'),
+    url(r'^propose-trade/', propose_trade, name='propose-trade'),
     url(r'^live-scores/$', live_scores, name='live-scores'),
     url(r'^player-info/(?P<player_id>[\w-]+)/$', player_info, name='player-info'),
     url(r'^transaction-player/$', transaction_player, name='transaction-player'),

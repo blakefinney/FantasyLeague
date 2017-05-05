@@ -38,7 +38,10 @@ def team_home(request, team_id=None):
 
     for pos in TEAM_CONST.STARTER_ORDER:
         no_of_pos = TEAM_CONST.STARTING_SPOTS[pos]
-        for i in range(0,no_of_pos):
+        if pos == POSITIONS.BENCH:
+            if len(team['bench']) > no_of_pos:
+                no_of_pos = len(team['bench'])
+        for i in range(0, no_of_pos):
             total = 0
             if pos == POSITIONS.BENCH:
                 p_id = 'noplayer'
@@ -57,6 +60,10 @@ def team_home(request, team_id=None):
                     q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
                     q.player(player_id=p_id)
                     result = q.as_aggregate()
+                try:
+                    p = Player.objects.get(ng_id=p_id)
+                except:
+                    p = None
                 if len(result):
                     stats = result[0]
                     bench.append({
@@ -71,13 +78,12 @@ def team_home(request, team_id=None):
                         "rec": {"tar":stats.receiving_tar,"recep": stats.receiving_rec, "yards": stats.receiving_yds, "tds": stats.receiving_tds},
                         "points": total
                     })
-                elif not nflgame.players.get(p_id) is None:
-                    p = nflgame.players.get(p_id)
+                elif p is not None:
                     bench.append({
                         "position": str(pos),
                         "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                         "player_id": p_id,
-                        "player_name": p.full_name,
+                        "player_name": p.name,
                         "player_position": str(p.position),
                         "player_team": p.team,
                         "pass": {"atts": 0, "yards": 0, "tds": 0},
@@ -107,6 +113,10 @@ def team_home(request, team_id=None):
                     q = nfldb.Query(db).game(season_year=2016, season_type='Regular')
                     q.player(player_id=p_id)
                     result = q.as_aggregate()
+                try:
+                    p = Player.objects.get(ng_id=p_id)
+                except:
+                    p = None
                 p_name = 'Empty'
                 if len(result):
                     stats = result[0]
@@ -123,14 +133,13 @@ def team_home(request, team_id=None):
                         "rec":{"tar":stats.receiving_tar,"recep":stats.receiving_rec,"yards": stats.receiving_yds,"tds":stats.receiving_tds},
                         "points": total
                     })
-                elif not nflgame.players.get(p_id) is None:
-                    p = nflgame.players.get(p_id)
-                    p_name = p.full_name
+                elif p is not None:
+                    p_name = p.name
                     positions.append({
                         "position": str(pos),
                         "position_accepts": TEAM_CONST.POSITION_ACCEPTS[pos],
                         "player_id": p_id,
-                        "player_name": p.full_name,
+                        "player_name": p.name,
                         "player_position": str(p.position),
                         "player_team": p.team,
                         "pass": {"atts": 0, "yards": 0, "tds": 0},

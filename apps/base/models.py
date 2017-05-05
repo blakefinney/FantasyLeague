@@ -89,6 +89,16 @@ class Player(models.Model):
         else:
             return False
 
+    def toJSON(self):
+        pl = {}
+        pl['ng_id'] = self.ng_id
+        pl['esb_id'] = self.esb_id
+        pl['name'] = self.name
+        pl['position'] = self.position
+        pl['team'] = self.team
+        return pl
+
+
 # Roster class
 class FantasyPoints(models.Model):
     objects = FpManager()
@@ -180,7 +190,7 @@ class Roster(models.Model):
     # Kicker
     K1 = models.ForeignKey(Player, null=True, related_name="K1")
     # Defence
-    DEF1 = models.CharField(max_length=15, default="noplayer")
+    DEF1 = models.ForeignKey(Player, null=True, related_name="DEF1")
     # Bench Array
     BENCH = models.CharField(max_length=150, default="[]")
 
@@ -215,11 +225,25 @@ class Roster(models.Model):
         self.FLEX2 = check_player(st[8])
         self.FLEX3 = check_player(st[9])
         self.K1 = check_player(st[10])
-        self.DEF = check_player(st[11])
+        self.DEF1 = check_player(st[11])
 
         self.BENCH = bench_array
 
         self.save()
+
+    def get_roster_array(self):
+        arr = [self.QB1, self.QB2, self.RB1, self.RB2, self.WR1, self.WR2, self.TE1, self.FLEX1, self.FLEX2, self.FLEX3, self.K1, self.DEF1]
+        ret_arr = []
+        ben = self.BENCH.split(',')
+        for b in ben:
+            if b and b != '':
+                arr.append(Player.objects.get(ng_id=b).toJSON())
+        for a in arr:
+            if not a:
+                arr.remove(a)
+            else:
+                ret_arr.append(a.toJSON())
+        return ret_arr
 
     def get_roster_size(self):
         players = 0
@@ -309,6 +333,7 @@ class Roster(models.Model):
         self.save()
         return dropped
 
+
 class Playoffs(models.Model):
     playoff_teams = models.IntegerField(default=2)
 
@@ -355,7 +380,19 @@ class Matchup(models.Model):
 
 class Standings(models.Model):
     parent_schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    year = models.IntegerField(default=0)
+    archive = models.CharField(max_length=1000, default="")
     division_name = models.CharField(max_length=20, default="Division Name here")
     number_of_teams = models.IntegerField(default=1)
     playoff_teams = models.IntegerField(default=1)
 
+
+class Trade(models.Model):
+    proposing_team = models.ForeignKey(Team, related_name="PropTeam")
+    receiving_team = models.ForeignKey(Team, related_name="RecTeam")
+
+    prop_players = models.CharField(max_length=1000)
+    rec_players = models.CharField(max_length=1000)
+
+    accepted_date = models.DateTimeField()
+    process_date = models.DateTimeField()

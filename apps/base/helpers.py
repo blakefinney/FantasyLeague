@@ -29,7 +29,7 @@ def calculate_week_score(game, player_stats, fgs):
     for d in game.drives:
         if d.result == 'Touchdown':
             for p in d.plays:
-                if p.passing_twopta or p.rushing_twopta:
+                if p.passing_twoptm or p.rushing_twoptm:
                     if p.has_player(player_stats.player.playerid):
                         two_point += 1
     if player_stats:
@@ -126,9 +126,10 @@ def calculate_week_score(game, player_stats, fgs):
             text_array.append(str(two_point) + " 2PT")
 
         # Kicking Stats
-        if player_stats.kicking_xpmade:
-            score += player_stats.kicking_xpmade * settings.SCORING_SYSTEM['kicking']['madeXP']
-            text_array.append(str(player_stats.kicking_xpmade) + " XPs Made")
+        if player_stats.kicking_xpa:
+            if player_stats.kicking_xpmade:
+                score += player_stats.kicking_xpmade * settings.SCORING_SYSTEM['kicking']['madeXP']
+                text_array.append(str(player_stats.kicking_xpmade) + " XPs Made")
             if player_stats.kicking_xpmade != player_stats.kicking_xpa:
                 misses = player_stats.kicking_xpa - player_stats.kicking_xpmade
                 score += misses * settings.SCORING_SYSTEM['kicking']['missXP']
@@ -195,48 +196,58 @@ def calculate_def_score(team, game):
         else:
             points_against = game.score_away
             opponent = game.away
-        # Get points based on game score
-        if points_against > 35:
-            score += settings.SCORING_SYSTEM['defence']['Conc35']
-            text_array.append('PA 35+')
-        elif points_against > 27:
-            score += settings.SCORING_SYSTEM['defence']['Conc28']
-            text_array.append('PA 28-34')
-        elif points_against > 20:
-            score += settings.SCORING_SYSTEM['defence']['Conc21']
-            text_array.append('PA 21-27')
-        elif points_against > 13:
-            score += settings.SCORING_SYSTEM['defence']['Conc14']
-            text_array.append('PA 14-20')
-        elif points_against > 6:
-            score += settings.SCORING_SYSTEM['defence']['Conc7']
-            text_array.append('PA 7-13')
-        elif points_against > 0:
-            score += settings.SCORING_SYSTEM['defence']['Conc1']
-            text_array.append('PA 1-6')
-        else:
-            score += settings.SCORING_SYSTEM['defence']['Conc0']
-            text_array.append('Shutout')
 
         # Get other game stats for defence
-        sks, frc, frc_td, ints, int_td, safe = 0, 0, 0, 0, 0, 0
-        for p in nflgame.combine_plays([game]).filter(team=opponent):
+        sks, frc, frc_td, ints, int_td, safe, ret_td, two_pt = 0, 0, 0, 0, 0, 0, 0, 0
+        for p in nflgame.combine_plays([game]):
             # Sacks
-            if p.defense_sk > 0:
-                sks += 1
+            if p.passing_sk > 0 and p.team == opponent:
+                if not p.defense_frec:
+                    # Dont count strip sack twice
+                    sks += 1
             # Fumbles
-            if p.defense_frc > 0:
-                frc += 1
-                if p.defense_frc_tds > 0:
-                    frc_td += 1
+            if p.defense_frec > 0 or p.fumbles_lost:
+                # Accounts for fumbles on Special Teams
+                if 'RECOVERED by '+team in p.desc or (p.team == opponent and p.fumbles_oob):
+                    frc += 1
+                    if p.defense_frec_tds > 0:
+                        frc_td += 1
+                    if p.passing_sk:
+                        # Strip Sack
+                        sks += 1
+                else:
+                    if p.defense_frec_tds > 0:
+                        # Dont charge Fumble 6 on Defence, retard offence alert
+                        points_against -= 6
             # Interceptions
             if p.defense_int > 0:
-                ints += 1
-                if p.defense_int_tds > 0:
-                    int_td += 1
+                if p.team == opponent:
+                    ints += 1
+                    if p.defense_int_tds > 0:
+                        int_td += 1
+                else:
+                    if p.defense_int_tds > 0:
+                        # Dont charge Pick 6 on Defence, retard offence alert
+                        points_against -= 6
             # Safeties
             if p.defense_safe > 0:
-                safe += 1
+                # Safety for defrence
+                if p.team == opponent:
+                    safe += 1
+                else:
+                    # Dont charge safety against defence; retarded offence's fault
+                    points_against -= 2
+            # Kick Return TDs
+            if p.kickret_tds > 0 or p.puntret_tds > 0 or p.defense_misc_tds > 0 or p.kicking_rec_tds:
+                for e in p.events:
+                    if 'kickret_tds' in e or 'puntret_tds' in e or 'defense_misc_yds' in e or 'kicking_rec_tds' in e:
+                        if e['team'] == team:
+                            ret_td += 1
+
+            if p.defense_xpblk > 0 and p.team == opponent:
+                # Blocked Extra point, was it returned?
+                if 'DEFENSIVE TWO-POINT ATTEMPT' in p.desc and 'ATTEMPT SUCCEEDS' in p.desc:
+                    two_pt +=1
         # Any Sacks?
         if sks:
             score += sks * settings.SCORING_SYSTEM['defence']['sack']
@@ -258,7 +269,37 @@ def calculate_def_score(team, game):
         # Safeties
         if safe:
             score += safe * settings.SCORING_SYSTEM['defence']['safeties']
-            text_array.append(str(safe) + ' Safeties')
+        # Two Point Return
+        if two_pt:
+            score += two_pt * settings.SCORING_SYSTEM['misc']['2PT']
+            text_array.append(str(two_pt) + ' 2 PT Return')
+        # Return TDs
+        if ret_td:
+            score += ret_td * settings.SCORING_SYSTEM['misc']['touchdowns']
+            text_array.append(str(ret_td) + ' TDs')
+
+        # Get points based on game score
+        if points_against > 34:
+            score += settings.SCORING_SYSTEM['defence']['Conc35']
+            text_array.append('PA 35+')
+        elif points_against > 27:
+            score += settings.SCORING_SYSTEM['defence']['Conc28']
+            text_array.append('PA 28-34')
+        elif points_against > 20:
+            score += settings.SCORING_SYSTEM['defence']['Conc21']
+            text_array.append('PA 21-27')
+        elif points_against > 13:
+            score += settings.SCORING_SYSTEM['defence']['Conc14']
+            text_array.append('PA 14-20')
+        elif points_against > 6:
+            score += settings.SCORING_SYSTEM['defence']['Conc7']
+            text_array.append('PA 7-13')
+        elif points_against > 0:
+            score += settings.SCORING_SYSTEM['defence']['Conc1']
+            text_array.append('PA 1-6')
+        else:
+            score += settings.SCORING_SYSTEM['defence']['Conc0']
+            text_array.append('Shutout')
 
         return score, text_array
     else:
